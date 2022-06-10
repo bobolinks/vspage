@@ -1,0 +1,25 @@
+{
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true,
+    "source.fixAll.eslint": true
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true,
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "minapp-vscode.reserveTags": [
+    "text"
+  ],
+  "files.associations": {
+    "*.wxss": "css",
+    "*.wxs": "javascript"
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+}

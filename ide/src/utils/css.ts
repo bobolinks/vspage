@@ -1,6 +1,5 @@
 /* eslint-disable no-restricted-syntax */
 import css, { Declaration, Import, Rule } from 'css';
-import { TyMap } from '@tencent/fide-std/types/types';
 import path from 'path';
 
 type TyThemeVar = {

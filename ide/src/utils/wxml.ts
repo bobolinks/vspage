@@ -1,4 +1,3 @@
-import { TyAstText, TyAst, TyAstLogic, TyTextExp } from "@tencent/fide-std/types/types";
 import Html, { TyAstRoot } from "./html";
 import Css from './css';
 

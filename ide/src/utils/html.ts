@@ -4,7 +4,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import css from 'css';
 import htmlParser from 'html-parser';
-import { TyAst, TyAstText, TyMap, TyAstComment, TyAstMacro } from '@tencent/fide-std/types/types';
 import cssUtil from './css';
 
 export const voidElements = new Set(['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr']);

@@ -1,4 +1,3 @@
-import { TyAst, TyAstLogic } from "@tencent/fide-std/types/types";
 import { TyAstRoot } from "./html";
 import Wxml, { TyEventValue } from './wxml';
 
@@ -12,13 +11,14 @@ type TyCreateOptions = {
   attrs: Record<string, string | number | boolean>;
   events: Record<string, TyEventValue>;
   classList: Array<string>;
+  propKeys: Array<string>;
 };
 
 function createElement(instance: any, tag: string, options: TyCreateOptions) {
   const node = customElements.get(tag) ? undefined : exparser.Component.create(tag);
   const el = node ? node.$$ : document.createElement(tag);
   const data: Record<string, string | number | boolean> = {};
-  const keys = new Set(node ? Object.keys(node.__dataProxy._propFields) : []);
+  const keys = new Set(options.propKeys);
   for (const it of (options.classList || [])) {
     el.classList.toggle(it);
   }
@@ -49,6 +49,7 @@ function createElement(instance: any, tag: string, options: TyCreateOptions) {
   node._hasCheckedLinked = true;
   node.__lifeTimeFuncs.attached.call(node.__methodCaller, [], node);
   node.$$.__ast = options.ast;
+  node.$$.__props = data;
   return node.$$;
 }
 
@@ -89,7 +90,7 @@ export default {
       return undefined;
     }
   },
-  generate(instance: any, ast: TyAstRoot, data: Object, scopedAttr: string, withPath?: boolean, attrsMap?: TyAttrsMap) {
+  generate(instance: any, ast: TyAstRoot, data: Object, scopedAttr: string, withPath?: boolean, attrsMap?: TyAttrsMap, propsMap?: Record<string, Array<string>>) {
     const create = (ast: TyAst, nodePath: TyAstPath = '', scoped: Record<string, any>) => {
       if (!ast.tag && (ast.comment || (typeof ast.text === 'string' && !ast.text.trim()))) {
         return undefined;
@@ -209,6 +210,7 @@ export default {
         attrs,
         events,
         classList: classList.filter((e: any) => e),
+        propKeys: propsMap && propsMap[ast.tag] || [],
       });
 
       // process children

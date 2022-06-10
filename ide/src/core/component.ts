@@ -31,6 +31,9 @@ export class TComponent implements WxComponentInstance {
     this.scoped = scoped;
     this.$$ = element;
   }
+  setUpdatePerformanceListener<WithDataPath extends boolean = false>(options: WechatMiniprogram.Component.SetUpdatePerformanceListenerOption<WithDataPath>, callback?: WechatMiniprogram.Component.UpdatePerformanceListener<WithDataPath>): void {
+    throw new Error('Method not implemented.');
+  }
   lifetimes: Partial<{ created(): void; attached(): void; ready(): void; moved(): void; detached(): void; error(err: Error): void; }>;
   setData(data: Partial<WechatMiniprogram.IAnyObject> & WechatMiniprogram.IAnyObject, callback?: () => void): void {
     Object.assign(this.data, data);
@@ -118,10 +121,17 @@ export class TComponentClass {
     // clone new one
     instance.data = JSON.parse(JSON.stringify(instance.data));
     const props = JSON.parse(JSON.stringify(instance.properties || {}));
-    for (const key of Object.keys(props)) {
-      const item = props[key];
-      if (item.value !== undefined) {
-        instance.data[key] = item.value;
+    for (const [key, item] of Object.entries(props)) {
+      const camelName = key.replace(/-([a-zA-Z])/g, $1 => $1.substring(1).toLocaleUpperCase());
+      const minusName = key.replace(/([a-z][A-Z])/g, $1 => `${$1[0]}-${$1[1].toLocaleLowerCase()}`);
+      const value = element.getAttribute(camelName) || element.getAttribute(minusName) || (item as any).default;
+      if (value !== null && value !== undefined) {
+        instance.data[key] = value;
+      }
+    }
+    if (element.__props) {
+      for (const [key, value] of Object.entries(element.__props)) {
+        instance.data[key] = value;
       }
     }
     return instance;
@@ -130,6 +140,7 @@ export class TComponentClass {
 
 export class WxComponent extends HTMLElement {
   instance?: TComponent;
+  __props?: any;
   static cxt: any = null;
   constructor() {
     super();
@@ -162,31 +173,40 @@ export class WxComponent extends HTMLElement {
     if (!this.instance) {
       throw 'has not attached';
     }
-    const data: any = {};
-    const properties = this.instance.properties || {};
-    for (const key of Object.keys(properties)) {
-      const camelName = key.replace(/-([a-zA-Z])/g, $1 => $1.substring(1).toLocaleUpperCase());
-      const minusName = key.replace(/([a-z][A-Z])/g, $1 => `${$1[0]}-${$1[1].toLocaleLowerCase()}`);
-      const value = this.getAttribute(camelName) || this.getAttribute(minusName);
-      if (value !== null) {
-        data[camelName] = value;
-        data[minusName] = value;
-      }
-    }
-    Object.assign(data, this.instance.data || {});
+    // const data: any = {};
+    // const properties = this.instance.properties || {};
+    // for (const key of Object.keys(properties)) {
+    //   const camelName = key.replace(/-([a-zA-Z])/g, $1 => $1.substring(1).toLocaleUpperCase());
+    //   const minusName = key.replace(/([a-z][A-Z])/g, $1 => `${$1[0]}-${$1[1].toLocaleLowerCase()}`);
+    //   const value = this.getAttribute(camelName) || this.getAttribute(minusName);
+    //   if (value !== null) {
+    //     data[camelName] = value;
+    //     data[minusName] = value;
+    //   }
+    // }
+    // Object.assign(data, this.instance.data || {});
     const ast = Wxml.toAst(this.instance.wxml);
     const attrsMap: TyAttrsMap = {};
+    const propsMap: Record<string, Array<string>> = {};
     if (store.config.usingComponents) {
       for (const [k, v] of Object.entries(store.config.usingComponents)) {
         attrsMap[k] = { 'data-comp-path': v };
+        const c = store.components[v];
+        if (c) {
+          propsMap[k] = Object.keys(c.options?.properties || {});
+        }
       }
     }
     if (this.instance.config?.usingComponents) {
       for (const [k, v] of Object.entries(this.instance.config.usingComponents)) {
         attrsMap[k] = { 'data-comp-path': v as string };
+        const c = store.components[v as string];
+        if (c) {
+          propsMap[k] = Object.keys(c.options?.properties || {});
+        }
       }
     }
-    const domTree = Dom.generate(this.instance, ast, data, this.instance.scoped, false, attrsMap);
+    const domTree = Dom.generate(this.instance, ast, this.instance.data || {}, this.instance.scoped, false, attrsMap, propsMap);
     while (this.childNodes.length > 1) {
       this.removeChild(this.childNodes[1]);
     }

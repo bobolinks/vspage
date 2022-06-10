@@ -1,4 +1,7 @@
 {
+  "files": [
+    "../service/types/index.d.ts"
+  ],
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
@@ -17,6 +20,7 @@
       "./node_modules/@types/",
       "./node_modules/miniprogram-api-typings",
     ],
+    "skipLibCheck": true,
   },
   "include": [
     "src/**/*.ts",
