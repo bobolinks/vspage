@@ -1,0 +1,8 @@
+{
+  "singleQuote": true,
+  "semi": true,
+  "eslintIntegration": true,
+  "tslintIntegration": true,
+  "printWidth": 250,
+  "trailingComma": "all"
+}

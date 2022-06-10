@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "typeRoots": [
+      "../service/types",
+      "./node_modules/@types/",
+      "./node_modules/miniprogram-api-typings",
+    ],
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+  ],
+  "exclude": [
+    "node_modules",
+  ]
+}

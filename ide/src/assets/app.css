@@ -1,0 +1,131 @@
+html {
+  font-weight: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 12px;
+}
+
+:root {
+  /*普通标题*/
+  --color-title: #17233d;
+  /*对话框标题*/
+  --color-title-dialog: #fff;
+  /*文本*/
+  --color-content: #5b6b73;
+  /*注释*/
+  --color-comment: #808695;
+  /*禁用态*/
+  --color-disabled: #c5c8ce;
+  /*选中*/
+  --color-selected: #b0b1b3;
+  /*弱高亮*/
+  --color-light-dark: #030303;
+  /*高亮*/
+  --color-light-normal: #2d8cf0;
+  /*强高亮*/
+  --color-light-high: #5cadff;
+  /*高亮-链接*/
+  --color-light-link: #2d8cf0;
+  /*高亮-信息提示*/
+  --color-light-info: #909399;
+  /*高亮-成功提示*/
+  --color-light-success: #67c23a;
+  /*高亮-告警提示*/
+  --color-light-warning: #e6a23c;
+  /*高亮-错误警告*/
+  --color-light-error: #f56c6c;
+  /*默认*/
+  --background-color-default: #fff;
+  /*工具栏*/
+  --background-color-toolbar: #fff;
+  /*面板*/
+  --background-color-pane: #f5f5f6;
+  /*面板主体*/
+  --background-color-pane-body: #fff;
+  /*标题栏*/
+  --background-color-title: #2b85e4;
+  /*代码块*/
+  --background-color-code: #f9f9fa;
+  /*浮窗*/
+  --background-color-float: #a0a0a0;
+  /*弹出框*/
+  --background-color-popver: #fff;
+  /*子元素*/
+  --background-color-element: #a0a0a0;
+  /*对话框*/
+  --background-color-dialog: #fff;
+  /*工作区*/
+  --background-color-workspace: #f5f5f5;
+  /*弱高亮*/
+  --background-color-light-dark: #2b85e4;
+  /*高亮*/
+  --background-color-light-normal: #e8eaec;
+  /*强高亮*/
+  --background-color-light-high: #2d8cf0;
+  /*高亮-信息提示*/
+  --background-color-light-info: #f4f4f5;
+  /*高亮-成功提示*/
+  --background-color-light-success: #f0f9eb;
+  /*高亮-告警提示*/
+  --background-color-light-warning: #fdf6ec;
+  /*高亮-错误警告*/
+  --background-color-light-error: #fef0f0;
+  /*大字体*/
+  --font-size-title-large: 24px;
+  /*标题*/
+  --font-size-title: 20px;
+  /*文本*/
+  --font-size-content: 12px;
+  /*注释*/
+  --font-size-comment: 10px;
+  /*大图标*/
+  --font-size-icon-large: 24px;
+  /*中图标*/
+  --font-size-icon-medium: 20px;
+  /*小图标*/
+  --font-size-icon-mini: 16px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+  /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;
+  /* Firefox, other Gecko */
+  box-sizing: border-box;
+  /* Opera/IE 8+ */
+}
+
+svg {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: white;
+  margin: 0;
+  min-height: 100vh;
+}
+
+.modal {
+  position: absolute;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.text-ellipsis {
+  display: block;
+  text-overflow: ellipsis;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+}

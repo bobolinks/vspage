@@ -1,0 +1,11 @@
+{
+  "ts-node": {
+    "files": true,
+  },
+  "files": [
+    "service/types/index.d.ts"
+  ],
+  "compilerOptions": {
+    "resolveJsonModule": true,
+  }
+}
