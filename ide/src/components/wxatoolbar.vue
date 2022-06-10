@@ -1,6 +1,5 @@
 <template>
-  <div class="devbar" :mode="options.navigationStyle"
-    style="display: flex; flex-direction: column; position: relative; width: 100%">
+  <div class="devbar" :mode="options.navigationStyle" style="display: flex; flex-direction: column; width: 100%">
     <StatusBar :options="options" :device="device"></StatusBar>
     <NavBar :options="options"></NavBar>
   </div>

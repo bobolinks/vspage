@@ -17,6 +17,7 @@ wx.navigateTo = async function (options: WechatMiniprogram.NavigateToOption) {
   const newPage = new TPage(path, pageOptions);
   store.pages.push(newPage);
   store.currPage = newPage.path;
+  store.page = pageOptions;
   simulator?.replaceChild(newPage.iframe, simulator.children[1]);
 } as any;
 
@@ -36,6 +37,7 @@ wx.navigateBack = async function (options: WechatMiniprogram.NavigateBackOption)
   if (store.pages.length) {
     const page = store.pages[store.pages.length - 1];
     store.currPage = page.path;
+    store.page = page.options;
     simulator.replaceChild(page.iframe, simulator.children[1]);
   } else {
     simulator.replaceChild(document.createElement('iframe'), simulator.children[1]);

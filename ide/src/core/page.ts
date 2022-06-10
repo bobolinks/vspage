@@ -99,6 +99,9 @@ export class TPage implements WxPageInstance {
       Sys.mountModule(`module-page-${id}`, path, t, {});
     });
   }
+  setUpdatePerformanceListener<WithDataPath extends boolean = false>(options: WechatMiniprogram.Component.SetUpdatePerformanceListenerOption<WithDataPath>, callback?: WechatMiniprogram.Component.UpdatePerformanceListener<WithDataPath>): void {
+    throw new Error('Method not implemented.');
+  }
   onLoad(arg?: Record<string, string | undefined>): void | Promise<void> {
     throw new Error('Method not implemented.');
   }

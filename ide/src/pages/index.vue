@@ -8,8 +8,8 @@
         <div class="container"
           style="align-items: center; display: flex; flex-direction: column; justify-content: center">
           <div class="simulator" id="simulator"
-            style="align-content: stretch; align-items: stretch; flex-direction: column; flex-wrap: nowrap">
-            <StatusBar class="statusbar" :options="pageOptions" :device="state.device"></StatusBar>
+            style="align-items: stretch; flex-direction: column; position: relative;">
+            <StatusBar class="statusbar" :options="state.page" :device="state.device"></StatusBar>
             <iframe seamless="true"></iframe>
           </div>
           <div class="qrcode" v-if="qrcode"
@@ -65,10 +65,6 @@ const loading = computed(() => {
   return state.loading;
 });
 
-const pageOptions = computed(() => {
-  return state.page;
-});
-
 onMounted(() => {
   rpc.describe('account:qrcode', (url: string) => {
     qrcode.value = url;
@@ -114,6 +110,10 @@ const tagPlugin = (index: number) => {
   min-width: calc(var(--dev-width) + 16px);
   min-height: calc(var(--dev-height) + 16px);
   position: relative;
+}
+
+.statusbar {
+  z-index: 999;
 }
 
 .simulator {

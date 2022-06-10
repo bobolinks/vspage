@@ -33,7 +33,7 @@ defineProps({
 <style scoped>
 .navbar {
   flex: 0;
-  min-height: 44px;
+  min-height: 40px;
   margin: 0;
   padding: 0px 8px;
   justify-content: space-between;

@@ -16,10 +16,10 @@ defineProps({
 
 const items = readonly<Array<DeviceInfo>>([
   { value: 'Auto', label: '自适应', dimension: { width: '100%', height: '100%' } },
-  { value: 'iPhone12', label: 'iPhone 12', statusBarHeight: '20px', dimension: { width: '390px', height: '844px' } },
-  { value: 'iPhoneXsMax', label: 'iPhone Xs Max/11 Pro Max', statusBarHeight: '20px', dimension: { width: '414px', height: '896px' } },
-  { value: 'iPhoneXR', label: 'iPhone XR/11 Pro', statusBarHeight: '20px', dimension: { width: '414px', height: '896px' } },
-  { value: 'iPhoneX', label: 'iPhone X/Xs', statusBarHeight: '20px', dimension: { width: '375px', height: '812px' } },
+  { value: 'iPhone12', label: 'iPhone 12', statusBarHeight: '44px', dimension: { width: '390px', height: '844px' } },
+  { value: 'iPhoneXsMax', label: 'iPhone Xs Max/11 Pro Max', statusBarHeight: '44px', dimension: { width: '414px', height: '896px' } },
+  { value: 'iPhoneXR', label: 'iPhone XR/11 Pro', statusBarHeight: '44px', dimension: { width: '414px', height: '896px' } },
+  { value: 'iPhoneX', label: 'iPhone X/Xs', statusBarHeight: '44px', dimension: { width: '375px', height: '812px' } },
   { value: 'iPhone8Plus', label: 'iPhone 6p/7p/8p', statusBarHeight: '20px', dimension: { width: '414px', height: '736px' } },
   { value: 'iPhone8', label: 'iPhone 6/7/8', statusBarHeight: '20px', dimension: { width: '375px', height: '667px' } },
   { value: 'iPhone5', label: 'iPhone 5/5s/5se', statusBarHeight: '20px', dimension: { width: '320px', height: '568px' } },

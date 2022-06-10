@@ -82,7 +82,7 @@ const state = {
   device: {
     value: 'iPhoneX',
     label: 'iPhone X/Xs',
-    statusBarHeight: '20px',
+    statusBarHeight: '44px',
     dimension: {
       width: '375px',
       height: '812px'

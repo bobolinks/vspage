@@ -1,6 +1,6 @@
 <template>
-  <div class="iPhoneX-StatusBar"
-    :style="{ flex: '0', height: device.statusBarHeight, backgroundColor: options.navigationBarBackgroundColor || '#f8f8f9' }">
+  <div class="iPhoneX-StatusBar" :mode="options.navigationStyle"
+    :style="{ flex: '0', minHeight: device.statusBarHeight, backgroundColor: options.navigationBarBackgroundColor || '#f8f8f9' }">
     <div style="display: flex; flex: 0; flex-direction: row">
       <div class="StatusBarSignal">
         <svg xmlns="http://www.w3.org/2000/svg" width="17" height="12">
@@ -37,9 +37,6 @@ defineProps({
     type: Object,
     default: {
       navigationBarBackgroundColor: '#fff',
-      device: {
-        statusBarHeight: '22px',
-      },
     },
     required: true,
   },
@@ -65,6 +62,10 @@ defineProps({
   padding: 0 14px;
   position: relative;
   color: #3e3e3e;
+}
+
+.iPhoneX-StatusBar[mode='custom'] {
+  background: transparent !important;
 }
 
 .iPhoneX-StatusBar .StatusBarTime {
