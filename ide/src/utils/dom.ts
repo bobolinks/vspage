@@ -42,14 +42,14 @@ function createElement(instance: any, tag: string, options: TyCreateOptions) {
       };
     }
   }
+  el.__ast = options.ast;
+  el.__props = data;
   if (!node) {
     return el;
   }
   node.setData(data);
   node._hasCheckedLinked = true;
   node.__lifeTimeFuncs.attached.call(node.__methodCaller, [], node);
-  node.$$.__ast = options.ast;
-  node.$$.__props = data;
   return node.$$;
 }
 

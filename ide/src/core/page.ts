@@ -22,17 +22,26 @@ export function renderPage(page: WxPageInstance) {
   const wxml = (page.iframe.contentWindow as any).wxml;
   const ast = Wxml.toAst(wxml);
   const attrsMap: TyAttrsMap = {};
+  const propsMap: Record<string, Array<string>> = {};
   if (store.config.usingComponents) {
     for (const [k, v] of Object.entries(store.config.usingComponents)) {
       attrsMap[k] = { 'data-comp-path': v };
+      const c = store.components[v];
+      if (c) {
+        propsMap[k] = Object.keys(c.options?.properties || {});
+      }
     }
   }
   if (page.config?.usingComponents) {
     for (const [k, v] of Object.entries(page.config.usingComponents)) {
       attrsMap[k] = { 'data-comp-path': v as any };
+      const c = store.components[v as string];
+      if (c) {
+        propsMap[k] = Object.keys(c.options?.properties || {});
+      }
     }
   }
-  const domTree = Dom.generate(page, ast, page.data, page.scoped, true, attrsMap);
+  const domTree = Dom.generate(page, ast, page.data, page.scoped, true, attrsMap, propsMap);
   while (d.body.childNodes.length > 1) {
     d.body.removeChild(d.body.childNodes[1]);
   }

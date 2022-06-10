@@ -1,6 +1,7 @@
 import store, { UsingComponents, files } from '../store';
 import { TyAttrsMap } from '../utils/dom';
 import { Cache, Sys, Path, Wxml, Dom } from '../utils/index';
+import { TPage } from './page';
 
 type WxComponentInstance = WechatMiniprogram.Component.TrivialInstance & Pick<WechatMiniprogram.Component.Lifetimes, 'lifetimes'>;
 type WxComponentOptions = WechatMiniprogram.Component.TrivialOption;
@@ -43,7 +44,20 @@ export class TComponent implements WxComponentInstance {
     throw new Error("Method not implemented.");
   }
   triggerEvent<DetailType = any>(name: string, detail?: DetailType, options?: WechatMiniprogram.Component.TriggerEventOption): void {
-    throw new Error("Method not implemented.");
+    const { events } = this.$$.__ast;
+    if (!events) {
+      return;
+    }
+    const ev = events[name] as any;
+    if (!ev) {
+      return;
+    }
+    const pages = store.pages;
+    const currPage = pages[pages.length - 1] as any;
+    const method = currPage[ev.script];
+    if (method) {
+      method({ detail });
+    }
   }
   createSelectorQuery(): WechatMiniprogram.SelectorQuery {
     throw new Error("Method not implemented.");
@@ -140,6 +154,7 @@ export class TComponentClass {
 
 export class WxComponent extends HTMLElement {
   instance?: TComponent;
+  __ast: TyAst = {} as any;
   __props?: any;
   static cxt: any = null;
   constructor() {
@@ -173,18 +188,6 @@ export class WxComponent extends HTMLElement {
     if (!this.instance) {
       throw 'has not attached';
     }
-    // const data: any = {};
-    // const properties = this.instance.properties || {};
-    // for (const key of Object.keys(properties)) {
-    //   const camelName = key.replace(/-([a-zA-Z])/g, $1 => $1.substring(1).toLocaleUpperCase());
-    //   const minusName = key.replace(/([a-z][A-Z])/g, $1 => `${$1[0]}-${$1[1].toLocaleLowerCase()}`);
-    //   const value = this.getAttribute(camelName) || this.getAttribute(minusName);
-    //   if (value !== null) {
-    //     data[camelName] = value;
-    //     data[minusName] = value;
-    //   }
-    // }
-    // Object.assign(data, this.instance.data || {});
     const ast = Wxml.toAst(this.instance.wxml);
     const attrsMap: TyAttrsMap = {};
     const propsMap: Record<string, Array<string>> = {};
