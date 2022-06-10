@@ -45,7 +45,8 @@ export const wxGlobal: WxGlobal = {
     const pages = wxGlobal.getCurrentPages();
     const currPage = pages[pages.length - 1];
     bindPage(currPage, options);
-    currPage.onLoad();
+    const [, query] = store.currPage.split('?');
+    currPage.onLoad(Object.fromEntries((query || '').split('&').map(v => v.split('='))));
     currPage.onShow();
   },
   getCurrentPages() {

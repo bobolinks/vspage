@@ -60,11 +60,14 @@ export class TPage implements WxPageInstance {
   config: any;
   iframe: HTMLIFrameElement;
   path: string;
+  url: string;
   scoped: string;
-  constructor(path: string, config: any) {
+  constructor(url: string, config: any) {
+    const path = url.split('?')[0];;
     const id = path.replace(/[^0-9a-z-]/ig, '-');
     this.data = {};
     this.path = path;
+    this.url = url;
     this.is = '';
     this.route = '';
     this.options = {};

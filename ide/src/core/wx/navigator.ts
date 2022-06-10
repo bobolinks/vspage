@@ -8,15 +8,16 @@ wx.navigateTo = async function (options: WechatMiniprogram.NavigateToOption) {
   if (!simulator) {
     throw 'error';
   }
-  const path = Path.relative(store.currPage || '/', options.url);
+  const url = Path.relative(store.currPage || '/', options.url);
+  const path = url.split('?')[0];
   const pageOptions = await Sys.import(`${path}.json?import=module`);
   if (pageOptions.usingComponents) {
     formatUsingCompoents(pageOptions.usingComponents, path);
     await loadComponents(pageOptions.usingComponents);
   }
-  const newPage = new TPage(path, pageOptions);
+  const newPage = new TPage(url, pageOptions);
   store.pages.push(newPage);
-  store.currPage = newPage.path;
+  store.currPage = url;
   store.page = pageOptions;
   simulator?.replaceChild(newPage.iframe, simulator.children[1]);
 } as any;
@@ -36,7 +37,7 @@ wx.navigateBack = async function (options: WechatMiniprogram.NavigateBackOption)
   store.pages.splice(store.pages.length - delta);
   if (store.pages.length) {
     const page = store.pages[store.pages.length - 1];
-    store.currPage = page.path;
+    store.currPage = page.url;
     store.page = page.options;
     simulator.replaceChild(page.iframe, simulator.children[1]);
   } else {
