@@ -1,6 +1,6 @@
 <template>
   <div class="devbar" :mode="options.navigationStyle" style="display: flex; flex-direction: column; width: 100%">
-    <StatusBar :options="options" :device="device"></StatusBar>
+    <StatusBar :options="options" :sysinfo="sysinfo"></StatusBar>
     <NavBar :options="options"></NavBar>
   </div>
 </template>
@@ -19,10 +19,10 @@ defineProps({
     },
     required: true,
   },
-  device: {
+  sysinfo: {
     type: Object,
     default: {
-      statusBarHeight: '22px',
+      statusBarHeight: 22,
     },
     required: true,
   },

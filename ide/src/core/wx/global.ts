@@ -1,7 +1,6 @@
 import { Sys } from '../../utils/index';
 import store from '../../store';
 import { bindPage, } from '../page';
-import { TComponentClass } from '../component';
 
 let instance = null as WechatMiniprogram.App.Options<any>;
 
@@ -48,6 +47,7 @@ export const wxGlobal: WxGlobal = {
     const [, query] = store.currPage.split('?');
     currPage.onLoad(Object.fromEntries((query || '').split('&').map(v => v.split('='))));
     currPage.onShow();
+    currPage.onReady();
   },
   getCurrentPages() {
     return store.pages as any;

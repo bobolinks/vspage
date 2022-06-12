@@ -3,13 +3,13 @@
     <div style="display: flex; flex-direction: row">
       <div style="display: flex; flex-direction: column; min-height: 100vh; flex: 0 0 0%; position: relative">
         <div class="topbar" style="display: flex; flex-direction: row; justify-content: flex-end">
-          <Devices :value="state.device" @input="change" style="flex: 0 0 0%"></Devices>
+          <Devices :device="state.sysinfo.model" @input="change" style="flex: 0 0 0%"></Devices>
         </div>
         <div class="container"
           style="align-items: center; display: flex; flex-direction: column; justify-content: center">
           <div class="simulator" id="simulator"
             style="align-items: stretch; flex-direction: column; position: relative;">
-            <StatusBar class="statusbar" :options="state.page" :device="state.device"></StatusBar>
+            <StatusBar class="statusbar" :options="state.page" :sysinfo="state.sysinfo"></StatusBar>
             <iframe seamless="true"></iframe>
           </div>
           <div class="qrcode" v-if="qrcode"
@@ -35,7 +35,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, readonly, onMounted, computed, watch, } from 'vue';
+import { ref, readonly, onMounted, computed, } from 'vue';
 import Devices from '../components/devices.vue';
 import ModalBox from '../components/modalBox.vue';
 import Loading from '../components/loading.vue';
@@ -43,6 +43,7 @@ import Plugin from '../components/plugin.vue';
 import StatusBar from '../components/wxatoolbar.vue';
 import state from '../store';
 import { rpc } from '../rpc';
+import type { DeviceInfo } from '../components/devices.vue';
 
 const qrcode = ref('');
 const plugins = readonly([
@@ -71,14 +72,31 @@ onMounted(() => {
   }, null);
 });
 
-const change = (value: any) => {
-  if (!value.dimension) {
+const change = (device: DeviceInfo) => {
+  if (!device) {
     // fk, why vue emit change event twice
     return;
   }
-  state.device = value;
-  document.documentElement.style.setProperty('--dev-width', `${value.dimension.width}`);
-  document.documentElement.style.setProperty('--dev-height', `${value.dimension.height}`);
+  state.sysinfo.brand = device.value;
+  state.sysinfo.model = device.label;
+  // state.sysinfo.naviHeight = 40;
+  const safeHeight = device.dimension.height - device.statusBarHeight - state.sysinfo.naviHeight + 6;
+  state.sysinfo.safeArea = {
+    top: device.statusBarHeight,
+    left: 0,
+    right: device.dimension.width,
+    bottom: device.statusBarHeight + safeHeight,
+    height: safeHeight,
+    width: device.dimension.width,
+  };
+  state.sysinfo.screenHeight = device.dimension.height;
+  state.sysinfo.screenWidth = device.dimension.width;
+  state.sysinfo.statusBarHeight = device.statusBarHeight;
+  state.sysinfo.windowHeight = device.dimension.height;
+  state.sysinfo.windowWidth = device.dimension.width;
+
+  document.documentElement.style.setProperty('--dev-width', `${device.dimension.width}px`);
+  document.documentElement.style.setProperty('--dev-height', `${device.dimension.height}px`);
 };
 
 const onModalAction = (name: string) => {

@@ -114,13 +114,9 @@ export class TPage implements WxPageInstance {
   setUpdatePerformanceListener<WithDataPath extends boolean = false>(options: WechatMiniprogram.Component.SetUpdatePerformanceListenerOption<WithDataPath>, callback?: WechatMiniprogram.Component.UpdatePerformanceListener<WithDataPath>): void {
     throw new Error('Method not implemented.');
   }
-  onLoad(arg?: Record<string, string | undefined>): void | Promise<void> {
-    throw new Error('Method not implemented.');
-  }
+  onLoad(arg?: Record<string, string | undefined>): void | Promise<void> { }
   onShow(arg?: unknown): void | Promise<void> { }
-  onReady(arg?: unknown): void | Promise<void> {
-    throw new Error('Method not implemented.');
-  }
+  onReady(arg?: unknown): void | Promise<void> { }
   onHide(arg?: unknown): void | Promise<void> {
     throw new Error('Method not implemented.');
   }

@@ -14,7 +14,7 @@ wx.showLoading = async function (options: WechatMiniprogram.ShowLoadingOption) {
     if (success) success(res);
     if (complete) complete(res);
     return res;
-  } catch (e) {
+  } catch (e: any) {
     if (fail) fail(e);
     res.errMsg = e.message;
     if (complete) complete(res);
@@ -49,7 +49,7 @@ wx.showModal = async function (options: WechatMiniprogram.ShowModalOption) {
     if (success) success(resSuc);
     if (complete) complete(res);
     return resSuc;
-  } catch (e) {
+  } catch (e: any) {
     if (fail) fail(e);
     res.errMsg = e.message;
     if (complete) complete(res);

@@ -116,7 +116,7 @@ export const module: WechatMiniprogram.FileSystemManager = {
     if (typeof data !== 'string' && (data as any).data && (data as any).type === 'Buffer') {
       data = Encoding.toTypedArray((data as any).data);
     }
-    fs.writeFileSync(relPath(filePath), data as any, encoding);
+    fs.writeFileSync(relPath(filePath), data as any, encoding as any);
   },
   readSync(option: WechatMiniprogram.ReadSyncOption): WechatMiniprogram.ReadResult {
     throw new Error('Method not implemented.');
@@ -148,6 +148,12 @@ export const module: WechatMiniprogram.FileSystemManager = {
   truncateSync(option: WechatMiniprogram.TruncateSyncOption): undefined {
     throw new Error('Method not implemented.');
   },
+  readCompressedFileSync: function (option: WechatMiniprogram.ReadCompressedFileSyncOption): ArrayBuffer {
+    throw new Error('Function not implemented.');
+  },
+  readCompressedFile: function (option: WechatMiniprogram.ReadCompressedFileOption): void {
+    throw new Error('Function not implemented.');
+  }
 };
 
 interface FileOption {

@@ -27,7 +27,7 @@ export default {
     // mount app
     await Sys.mountModule('module-app', '/app', Cache.findStamp('/app', files), {});
     // mount components
-    await loadComponents(store.config.usingComponents);
+    await loadComponents(store.config.usingComponents || {});
     await wx.navigateTo({
       url: options.url || 'pages/index/index',
     })

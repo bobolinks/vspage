@@ -1,7 +1,11 @@
-import store, { UsingComponents, files } from '../../store';
+import store from '../../store';
 import { TPage } from '../page';
 import { Cache, Sys, Path } from '../../utils/index';
 import { formatUsingCompoents, loadComponents } from '../component';
+
+wx.setNavigationBarTitle = async function (options: WechatMiniprogram.SetNavigationBarTitleOption) {
+  store.page.navigationBarTitleText = options.title;
+} as any;
 
 wx.navigateTo = async function (options: WechatMiniprogram.NavigateToOption) {
   const simulator = document.getElementById('simulator');

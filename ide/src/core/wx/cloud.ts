@@ -1,5 +1,3 @@
-import { Net } from "../../utils";
-
 wx.cloud = {
   init() {
     return Promise.resolve();

@@ -1,4 +1,4 @@
-import store, { UsingComponents, files } from '../store';
+import store, { files } from '../store';
 import { TyAttrsMap } from '../utils/dom';
 import { Cache, Sys, Path, Wxml, Dom } from '../utils/index';
 import { TPage } from './page';
@@ -177,6 +177,8 @@ export class WxComponent extends HTMLElement {
     Sys.mountLink(`stylesheet-component-${tag}`, wxssPath, Cache.findStamp(wxssPath, files), {}, currPage.iframe.contentDocument);
     this.render();
     this.instance.lifetimes.attached?.call(this.instance);
+    const ready = this.instance.lifetimes.ready || (this.instance as any).ready;
+    ready?.call(this.instance);
   }
   disconnectedCallback() {
     if (this.instance) {
