@@ -8,7 +8,7 @@ import { wxGlobal } from './wx/global';
 type WxPageInstance = WechatMiniprogram.Page.Instance<WechatMiniprogram.Page.DataOption, WechatMiniprogram.Page.CustomOption>;
 type WxPageOptions = WechatMiniprogram.Page.Options<any, any>;
 
-function updateSelector(doc: Document, el?: HTMLElement) {
+export function updateSelector(doc: Document, el?: HTMLElement) {
   let selector = doc.getElementById('editor-element-selector');
   if (!selector) return;
   if (el) {
@@ -85,7 +85,7 @@ export function renderPage(page: WxPageInstance) {
     e.onclick = (ev: Event) => {
       ev.stopPropagation();
       updateSelector(d, e);
-      Editor.select((e as any).__ast);
+      Editor.select(e);
     };
   });
 }

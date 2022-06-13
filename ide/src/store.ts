@@ -84,8 +84,10 @@ const state = {
       appId: "",
     },
   } as SystemInfo,
+  theme: 'dark' as 'dark' | 'light',
   swap: {
-    ast: readonly(null as any as TyAst),
+    element: readonly(null as any as HTMLElement),
+    ast: null as any as TyAst,
   },
 };
 

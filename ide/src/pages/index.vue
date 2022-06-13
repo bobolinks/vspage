@@ -2,7 +2,7 @@
   <div class="main">
     <div style="display: flex; flex-direction: row">
       <div style="display: flex; flex-direction: column; min-height: 100vh; flex: 1 0 0%; position: relative">
-        <div class="topbar" style="display: flex; flex-direction: row; justify-content: space-between">
+        <div class="topbar" style="justify-content: space-between">
           <Toolbar :items="topbar" align="horizontal"></Toolbar>
           <Devices :device="state.sysinfo.model" @input="change" style="flex: 0 0 0%"></Devices>
         </div>
@@ -26,7 +26,13 @@
         </div>
       </div>
       <div class="rightbar">
+        <div class="topbar" style="justify-content:center; align-items: center;">
+          <i class="idefont icon-logo" @click="changeTheme" :theme="state.theme"></i>
+        </div>
         <Toolbar :items="handside" align="vertical"></Toolbar>
+        <Popover class="tmpsPop" placement="left" max-width="420px">
+          <FlexPane key="Flex-Pane" v-if="showFlex"></FlexPane>
+        </Popover>
       </div>
     </div>
   </div>
@@ -39,10 +45,15 @@ import Loading from '../components/loading.vue';
 import StatusBar from '../components/wxatoolbar.vue';
 import Ruler from '../components/ruler.vue';
 import Toolbar from '../components/toolbar.vue';
+import Popover, { showPopover } from '../components/popover.vue';
+import FlexPane from '../components/flex.vue';
 import state from '../store';
 import { rpc } from '../rpc';
 import type { DeviceInfo } from '../components/devices.vue';
 import { layout } from '../actions/layout';
+import { group as handsideGroup } from '../actions/handside';
+import { Editor } from '../vspage';
+import { updateSelector } from '../core/page';
 
 const qrcode = ref('');
 
@@ -58,6 +69,14 @@ onMounted(() => {
   rpc.describe('account:qrcode', (url: string) => {
     qrcode.value = url;
   }, null);
+  const simulator = document.getElementById('simulator') as HTMLElement;
+  if (simulator.parentElement) {
+    simulator.parentElement.onclick = () => {
+      const iframe = simulator.querySelector('iframe') as HTMLIFrameElement;
+      updateSelector(iframe.contentDocument as any);
+      Editor.select(null as any);
+    };
+  }
 });
 
 const updateTick = ref(0);
@@ -98,7 +117,22 @@ const onModalAction = (name: string) => {
 
 /** top bar */
 const topbar = markRaw(Object.values(layout));
-const handside = ref([]);
+
+const showFlex = ref(false);
+
+handsideGroup.flex.excute = (ev: Event) => {
+  showFlex.value = true;
+  const popover = document.querySelector('.tmpsPop') as HTMLElement;
+  showPopover(popover, ev);
+};
+
+const handside = markRaw(Object.values(handsideGroup));
+
+const changeTheme = () => {
+  state.theme = state.theme === 'light' ? 'dark' : 'light';
+  document.body.classList.toggle('theme-light');
+  document.body.classList.toggle('theme-dark');
+};
 
 </script>
 <style>
@@ -160,10 +194,11 @@ const handside = ref([]);
 }
 
 .topbar {
-  z-index: 9999;
+  display: flex;
+  flex-direction: row;
+  /* z-index: 9999; */
   /* height: 30px; */
   border-bottom: 1px solid var(--border-color-default);
-  border-right: 1px solid var(--background-color-default);
   padding: 4px 8px;
   height: 40px;
   background: var(--background-color-toolbar);
@@ -200,7 +235,18 @@ const handside = ref([]);
   flex: 0 0 0%;
   min-width: 40px;
   background: var(--background-color-toolbar);
+  border-left: 1px solid var(--border-color-default);
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.icon-logo {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.icon-logo[theme="dark"] {
+  color: var(--color-light-normal);
 }
 </style>

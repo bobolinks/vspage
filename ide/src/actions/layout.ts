@@ -1,9 +1,9 @@
 import state from '../store';
 import { voidElements } from '../utils/html';
-import { Dom } from '../utils';
 import { Output, Editor } from '../vspage';
+import { StylePatch } from 'vspage';
 
-const isContainer = (): boolean => {
+export const isNotContainer = (): boolean => {
   const ast = state.swap.ast;
   if (!ast) return true;
   return voidElements.has(ast.tag);
@@ -13,7 +13,7 @@ export const layout: TyActionGroup = {
   row: {
     label: '横向排列',
     icon: ' flex flex-direction',
-    disabled: isContainer,
+    disabled: isNotContainer,
     actived() {
       const ast = state.swap.ast;
       if (!ast) return false;
@@ -27,21 +27,20 @@ export const layout: TyActionGroup = {
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
+      const patch = { display: 'flex' } as StylePatch;
       if (style['flex-direction'] === 'row') {
-        delete style['flex-direction'];
+        patch['flex-direction'] = false;
+        patch.display = false;
       } else {
-        style['flex-direction'] = 'row';
+        patch['flex-direction'] = 'row';
       }
-      if (style.display !== 'flex') {
-        style.display = 'flex';
-      }
-      Editor.markDirty();
+      Editor.patchStyle(patch);
     },
   },
   column: {
     label: '纵向排列',
     icon: ' flex flex-direction flex-column',
-    disabled: isContainer,
+    disabled: isNotContainer,
     actived() {
       const ast = state.swap.ast;
       if (!ast) return false;
@@ -55,15 +54,14 @@ export const layout: TyActionGroup = {
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
+      const patch = { display: 'flex' } as StylePatch;
       if (style['flex-direction'] === 'column') {
-        delete style['flex-direction'];
+        patch['flex-direction'] = false;
+        patch.display = false;
       } else {
-        style['flex-direction'] = 'column';
+        patch['flex-direction'] = 'column';
       }
-      if (style.display !== 'flex') {
-        style.display = 'flex';
-      }
-      Editor.markDirty();
+      Editor.patchStyle(patch);
     },
   },
   alignStart: {
@@ -79,7 +77,7 @@ export const layout: TyActionGroup = {
       }
       return ` flex${column} justify-content-flex-start`;
     },
-    disabled: isContainer,
+    disabled: isNotContainer,
     actived() {
       const ast = state.swap.ast;
       if (!ast) return false;
@@ -93,15 +91,13 @@ export const layout: TyActionGroup = {
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
-      const patch = { display: 'flex' } as any;
+      const patch = { display: 'flex' } as StylePatch;
       if (style['justify-content'] === 'flex-start') {
         patch['justify-content'] = false;
       } else {
         patch['justify-content'] = 'flex-start';
       }
-      if (Dom.patchStyle(style, patch)) {
-        Editor.markDirty();
-      }
+      Editor.patchStyle(patch);
     },
   },
   alignCenter: {
@@ -117,7 +113,7 @@ export const layout: TyActionGroup = {
       }
       return ` flex${column} justify-content-center`;
     },
-    disabled: isContainer,
+    disabled: isNotContainer,
     actived() {
       const ast = state.swap.ast;
       if (!ast) return false;
@@ -131,15 +127,13 @@ export const layout: TyActionGroup = {
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
-      const patch = { display: 'flex' } as any;
+      const patch = { display: 'flex' } as StylePatch;
       if (style['justify-content'] === 'center') {
         patch['justify-content'] = false;
       } else {
         patch['justify-content'] = 'center';
       }
-      if (Dom.patchStyle(style, patch)) {
-        Editor.markDirty();
-      }
+      Editor.patchStyle(patch);
     },
   },
   alignEnd: {
@@ -155,7 +149,7 @@ export const layout: TyActionGroup = {
       }
       return ` flex${column} justify-content-flex-end`;
     },
-    disabled: isContainer,
+    disabled: isNotContainer,
     actived() {
       const ast = state.swap.ast;
       if (!ast) return false;
@@ -175,9 +169,7 @@ export const layout: TyActionGroup = {
       } else {
         patch['justify-content'] = 'flex-end';
       }
-      if (Dom.patchStyle(style, patch)) {
-        Editor.markDirty();
-      }
+      Editor.patchStyle(patch);
     },
   },
   alignDistributed: {
@@ -193,7 +185,7 @@ export const layout: TyActionGroup = {
       }
       return ` flex${column} justify-content-space-around`;
     },
-    disabled: isContainer,
+    disabled: isNotContainer,
     actived() {
       const ast = state.swap.ast;
       if (!ast) return false;
@@ -213,9 +205,7 @@ export const layout: TyActionGroup = {
       } else {
         patch['justify-content'] = 'space-around';
       }
-      if (Dom.patchStyle(style, patch)) {
-        Editor.markDirty();
-      }
+      Editor.patchStyle(patch);
     },
   },
   alignTop: {
@@ -231,7 +221,7 @@ export const layout: TyActionGroup = {
       }
       return ` flex${column} align-items-flex-start`;
     },
-    disabled: isContainer,
+    disabled: isNotContainer,
     actived() {
       const ast = state.swap.ast;
       if (!ast) return false;
@@ -251,9 +241,7 @@ export const layout: TyActionGroup = {
       } else {
         patch['align-items'] = 'flex-start';
       }
-      if (Dom.patchStyle(style, patch)) {
-        Editor.markDirty();
-      }
+      Editor.patchStyle(patch);
     },
   },
   alignMiddle: {
@@ -269,7 +257,7 @@ export const layout: TyActionGroup = {
       }
       return ` flex${column} align-items-center`;
     },
-    disabled: isContainer,
+    disabled: isNotContainer,
     actived() {
       const ast = state.swap.ast;
       if (!ast) return false;
@@ -289,9 +277,7 @@ export const layout: TyActionGroup = {
       } else {
         patch['align-items'] = 'center';
       }
-      if (Dom.patchStyle(style, patch)) {
-        Editor.markDirty();
-      }
+      Editor.patchStyle(patch);
     },
   },
   alignBottom: {
@@ -307,7 +293,7 @@ export const layout: TyActionGroup = {
       }
       return ` flex${column} align-items-flex-end`;
     },
-    disabled: isContainer,
+    disabled: isNotContainer,
     actived() {
       const ast = state.swap.ast;
       if (!ast) return false;
@@ -327,9 +313,7 @@ export const layout: TyActionGroup = {
       } else {
         patch['align-items'] = 'flex-end';
       }
-      if (Dom.patchStyle(style, patch)) {
-        Editor.markDirty();
-      }
+      Editor.patchStyle(patch);
     },
   },
 }

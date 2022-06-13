@@ -26,11 +26,13 @@ declare module 'vspage' {
     alert(data: string | AlertData): void;
   }
 
+  type StylePatch = Record<string, string | false>;
+
   /** 编辑器接口 */
   interface Editor {
-    /** 标记为已修改 */
-    markDirty(): void;
+    /** 样式补丁 */
+    patchStyle(style: StylePatch): boolean;
     /** 选中元素 */
-    select(ast: TyAst): void;
+    select(element: HTMLElement): void;
   }
 }

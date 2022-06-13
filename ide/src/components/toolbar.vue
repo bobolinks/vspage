@@ -113,7 +113,6 @@ const isActived = (item: any) => {
 }
 
 .toolbar i[actived="true"] {
-  background: var(--background-color-light-normal);
   color: var(--color-light-normal);
 }
 
