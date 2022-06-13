@@ -84,6 +84,128 @@ html {
   --font-size-icon-medium: 20px;
   /*小图标*/
   --font-size-icon-mini: 16px;
+
+  /*默认边框颜色*/
+  --border-color-default: #dcdee2;
+  /*默认分割线*/
+  --border-color-divider-content: #dcdee2;
+  /*面板分割线*/
+  --border-color-divider-pane: #dcdee2;
+  /*内容分割线颜色*/
+  --border-color-sep: rgba(94, 243, 94, 0.2);
+  /*画布分割线颜色*/
+  --border-canvas: 1px solid #454647;
+
+  /*卡片阴影*/
+  --box-shadow-card: 0px 0px 6px 1px gray;
+  /*面板阴影*/
+  --box-shadow-pane: 0px 0px 6px 1px gray;
+  /*浮窗阴影*/
+  --box-shadow-float: 0px 0px 6px 1px gray;
+  /*画布阴影*/
+  --box-shadow-canvas: 0px 0px 6px 1px gray;
+}
+
+.theme-dark {
+  /*普通标题*/
+  --color-title: #fff;
+  /*对话框标题*/
+  --color-title-dialog: #fff;
+  /*文本*/
+  --color-content: #d7dde0;
+  /*注释*/
+  --color-comment: #959ca0;
+  /*禁用态*/
+  --color-disabled: #808080;
+  /*选中*/
+  --color-selected: #fff;
+  /*弱高亮*/
+  --color-light-dark: #2b85e4;
+  /*高亮*/
+  --color-light-normal: #2d8cf0;
+  /*强高亮*/
+  --color-light-high: #5cadff;
+  /*高亮-链接*/
+  --color-light-link: #fff;
+  /*高亮-信息提示*/
+  --color-light-info: #d7dde0;
+  /*高亮-成功提示*/
+  --color-light-success: #19be6b;
+  /*高亮-告警提示*/
+  --color-light-warning: #ff9900;
+  /*高亮-错误警告*/
+  --color-light-error: #ed4014;
+  /*默认*/
+  --background-color-default: #151515;
+  /*工具栏*/
+  --background-color-toolbar: #333435;
+  /*面板*/
+  --background-color-pane: #162738;
+  /*面板主体*/
+  --background-color-pane-body: #252626;
+  /*标题栏*/
+  --background-color-title: #474747;
+  /*代码块*/
+  --background-color-code: #434546;
+  /*浮窗*/
+  --background-color-float: #474747;
+  /*弹出框*/
+  --background-color-popver: #474747;
+  /*子元素*/
+  --background-color-element: #999999;
+  /*对话框*/
+  --background-color-dialog: #474747;
+  /*工作区*/
+  --background-color-workspace: #151515;
+  /*弱高亮*/
+  --background-color-light-dark: #2b85e4;
+  /*高亮*/
+  --background-color-light-normal: #555657;
+  /*强高亮*/
+  --background-color-light-high: #2d8cf0;
+  /*高亮-信息提示*/
+  --background-color-light-info: #474747;
+  /*高亮-成功提示*/
+  --background-color-light-success: #474747;
+  /*高亮-告警提示*/
+  --background-color-light-warning: #474747;
+  /*高亮-错误警告*/
+  --background-color-light-error: #474747;
+
+  /*大字体*/
+  --font-size-title-large: 24px;
+  /*标题*/
+  --font-size-title: 20px;
+  /*文本*/
+  --font-size-content: 12px;
+  /*注释*/
+  --font-size-comment: 10px;
+  /*大图标*/
+  --font-size-icon-large: 24px;
+  /*中图标*/
+  --font-size-icon-medium: 20px;
+  /*小图标*/
+  --font-size-icon-mini: 16px;
+
+  /*默认边框颜色*/
+  --border-color-default: #454647;
+  /*默认分割线*/
+  --border-color-divider-content: hsla(0, 0%, 100%, 0.3);
+  /*面板分割线*/
+  --border-color-divider-pane: #151515;
+  /*内容分割线颜色*/
+  --border-color-sep: rgba(94, 243, 94, 0.2);
+  /*画布分割线颜色*/
+  --border-canvas: 1px solid #454647;
+
+  /*卡片阴影*/
+  --box-shadow-card: none;
+  /*面板阴影*/
+  --box-shadow-pane: none;
+  /*浮窗阴影*/
+  --box-shadow-float: none;
+  /*画布阴影*/
+  --box-shadow-canvas: none;
 }
 
 * {
@@ -128,4 +250,26 @@ body {
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
+}
+
+/*el-select*/
+
+.el-select .el-input.is-disabled .el-input__inner:hover {
+  border-color: var(--border-color-default) !important;
+}
+
+.el-select-dropdown {
+  border-radius: 4px;
+  color: var(--color-content);
+  background-color: var(--background-color-popver);
+  border: 1px solid var(--border-color-default) !important;
+}
+
+.el-select-dropdown__item.hover,
+.el-select-dropdown__item:hover {
+  background-color: var(--background-color-light-normal) !important;
+}
+
+.el-select-dropdown__item {
+  color: var(--color-content);
 }

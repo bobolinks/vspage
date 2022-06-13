@@ -1,5 +1,5 @@
 <template>
-  <select class="select" placeholder="请选择" size="mini" style="flex: 0; min-width: 120px; margin-left: 4px"
+  <select class="select" placeholder="请选择" size="mini" style="flex: 0; min-width: 160px; margin-left: 4px"
     @change="onChanged">
     <option v-for="item in items" :key="item.value" :label="item.label" :value="item.value"
       :selected="device === item.value"></option>
@@ -61,5 +61,9 @@ const onChanged = (ev: any) => {
   line-height: 14px;
   vertical-align: middle;
   padding: 4px 10px;
+  border-radius: 4px;
+  color: var(--color-content);
+  background-color: var(--background-color-popver);
+  border: 1px solid var(--border-color-default) !important;
 }
 </style>

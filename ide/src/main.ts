@@ -1,6 +1,8 @@
 import { createApp, openBlock, resolveComponent, createBlock } from 'vue';
 import { createRouter, createWebHashHistory, createWebHistory } from "vue-router";
 import './assets/app.css';
+import './assets/flex.css';
+import './assets/idefont/iconfont.css';
 import appLifeCircle from './app';
 import routes from './router';
 import { store } from './store';

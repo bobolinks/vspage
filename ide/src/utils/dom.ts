@@ -30,6 +30,7 @@ function createElement(instance: any, tag: string, options: TyCreateOptions) {
       el.setAttribute(name, value === null ? '' : value);
     }
   }
+  /* disable events
   for (const [name, value] of Object.entries(options.events)) {
     if (name === 'tap') {
       el.onclick = (ev: Event) => {
@@ -42,6 +43,7 @@ function createElement(instance: any, tag: string, options: TyCreateOptions) {
       };
     }
   }
+  */
   el.__ast = options.ast;
   el.__props = data;
   if (!node) {
@@ -81,6 +83,29 @@ function inlineStyleTranform(style: Record<string, string>): string {
 }
 
 export default {
+  patchStyle(dst: any, src: any) {
+    let changed = false;
+    for (const [key, value] of Object.entries(src)) {
+      if (value === false) {
+        if (Object.hasOwnProperty.call(dst, key)) {
+          delete dst[key];
+          changed = true;
+        }
+        continue;
+      }
+      if (!Object.hasOwnProperty.call(dst, key)) {
+        changed = true;
+        dst[key] = value;
+      } else if (dst[key] !== src[key]) {
+        changed = true;
+        dst[key] = value;
+      }
+    }
+    if (!changed) {
+      console.log('no changed!');
+    }
+    return changed;
+  },
   excute(expression: string, scoped: Record<string, any>, context: Object) {
     const target = Object.assign({}, context, scoped);
     const _f = new Function('target', `with(target){ return ${expression};}`);

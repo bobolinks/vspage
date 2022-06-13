@@ -1,4 +1,4 @@
-import { watch } from "vue";
+import { watch, readonly } from "vue";
 import { createStore } from "vuex";
 import { TComponentClass } from "./core/component";
 import { TPage } from "./core/page";
@@ -84,7 +84,9 @@ const state = {
       appId: "",
     },
   } as SystemInfo,
-  mode: 'runtime' as 'runtime' | 'editor',
+  swap: {
+    ast: readonly(null as any as TyAst),
+  },
 };
 
 const sysinfo = localStorage.getItem('sysinfo');

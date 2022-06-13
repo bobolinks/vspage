@@ -14,5 +14,18 @@
         "--extensionDevelopmentPath=${workspaceRoot}/dist"
       ]
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "service",
+      "program": "${workspaceFolder}/service/node_modules/ts-node/dist/bin.js",
+      "args": [
+        "${workspaceFolder}/service/src/index.ts",
+        "--dir=/Users/amos/Projects/dlab/app",
+        "--port=4040",
+        "--open=true"
+      ],
+      "cwd": "${workspaceFolder}/service"
+    }
   ]
 }

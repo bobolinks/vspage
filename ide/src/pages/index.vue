@@ -1,8 +1,9 @@
 <template>
   <div class="main">
     <div style="display: flex; flex-direction: row">
-      <div style="display: flex; flex-direction: column; min-height: 100vh; flex: 0 0 0%; position: relative">
-        <div class="topbar" style="display: flex; flex-direction: row; justify-content: flex-end">
+      <div style="display: flex; flex-direction: column; min-height: 100vh; flex: 1 0 0%; position: relative">
+        <div class="topbar" style="display: flex; flex-direction: row; justify-content: space-between">
+          <Toolbar :items="topbar" align="horizontal"></Toolbar>
           <Devices :device="state.sysinfo.model" @input="change" style="flex: 0 0 0%"></Devices>
         </div>
         <div class="container"
@@ -12,6 +13,9 @@
             <StatusBar class="statusbar" :options="state.page" :sysinfo="state.sysinfo"></StatusBar>
             <iframe seamless="true"></iframe>
           </div>
+          <div class="ruler-corner"></div>
+          <Ruler class="ruler-hori" align="horizontal" elementBound="simulator" :update-tick="updateTick"></Ruler>
+          <Ruler class="ruler-vert" align="vertical" elementBound="simulator" :update-tick="updateTick"></Ruler>
           <div class="qrcode" v-if="qrcode"
             style="align-items: center; display: flex; flex-direction: column; justify-content: center">
             <img :src="qrcode" />
@@ -21,42 +25,26 @@
           <Loading v-if="loading.show"></Loading>
         </div>
       </div>
-      <div class="plugins" style="justify-content: space-between">
-        <div class="tabs" style="align-items: center; display: flex; flex-direction: row">
-          <label class="tab-item" v-for="(item, index) in plugins" :key="index" :selected="index === pluginSelected"
-            @click="tagPlugin(index)">{{ item.label }}</label>
-          <label class="tab-item" style="flex: 1 1 auto"></label>
-        </div>
-        <keep-alive>
-          <Plugin :src="plugins[pluginSelected].link" style="width: 100%; height: 100%"></Plugin>
-        </keep-alive>
+      <div class="rightbar">
+        <Toolbar :items="handside" align="vertical"></Toolbar>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, readonly, onMounted, computed, } from 'vue';
+import { ref, markRaw, onMounted, computed, } from 'vue';
 import Devices from '../components/devices.vue';
 import ModalBox from '../components/modalBox.vue';
 import Loading from '../components/loading.vue';
-import Plugin from '../components/plugin.vue';
 import StatusBar from '../components/wxatoolbar.vue';
+import Ruler from '../components/ruler.vue';
+import Toolbar from '../components/toolbar.vue';
 import state from '../store';
 import { rpc } from '../rpc';
 import type { DeviceInfo } from '../components/devices.vue';
+import { layout } from '../actions/layout';
 
 const qrcode = ref('');
-const plugins = readonly([
-  {
-    label: '命令行',
-    link: '',
-  },
-  {
-    label: '自动化测试',
-    link: '',
-  },
-]);
-const pluginSelected = ref(0);
 
 const modal = computed(() => {
   return state.modal;
@@ -71,6 +59,8 @@ onMounted(() => {
     qrcode.value = url;
   }, null);
 });
+
+const updateTick = ref(0);
 
 const change = (device: DeviceInfo) => {
   if (!device) {
@@ -97,6 +87,8 @@ const change = (device: DeviceInfo) => {
 
   document.documentElement.style.setProperty('--dev-width', `${device.dimension.width}px`);
   document.documentElement.style.setProperty('--dev-height', `${device.dimension.height}px`);
+
+  updateTick.value++;
 };
 
 const onModalAction = (name: string) => {
@@ -104,9 +96,9 @@ const onModalAction = (name: string) => {
   state.modal.resolve ?? (name);
 };
 
-const tagPlugin = (index: number) => {
-  pluginSelected.value = index;
-};
+/** top bar */
+const topbar = markRaw(Object.values(layout));
+const handside = ref([]);
 
 </script>
 <style>
@@ -119,14 +111,15 @@ const tagPlugin = (index: number) => {
   width: 100vw;
   height: 100vh;
   position: relative;
+  background-color: var(--background-color-default);
 }
 
 .container {
   flex: 1 1 auto;
   justify-self: stretch;
-  padding: 8px;
-  min-width: calc(var(--dev-width) + 16px);
-  min-height: calc(var(--dev-height) + 16px);
+  padding: 40px;
+  min-width: calc(var(--dev-width) + 80px);
+  min-height: calc(var(--dev-height) + 80px);
   position: relative;
 }
 
@@ -141,19 +134,14 @@ const tagPlugin = (index: number) => {
   height: var(--dev-height);
   min-height: var(--dev-height);
   display: flex;
-  box-shadow: 0px 0px 6px 1px gray;
+  box-shadow: var(--box-shadow-canvas);
 }
 
 .simulator iframe {
   flex: 1 1 auto;
   z-index: 0;
   border: none;
-}
-
-.plugins {
-  flex: 1 1 auto;
-  min-width: 200px;
-  border-left: 2px solid #f2f2f2;
+  background-color: white;
 }
 
 .main .qrcode {
@@ -173,24 +161,46 @@ const tagPlugin = (index: number) => {
 
 .topbar {
   z-index: 9999;
-  height: 30px;
-  border-bottom: 1px solid #f2f2f2;
-  padding: 2px 8px;
+  /* height: 30px; */
+  border-bottom: 1px solid var(--border-color-default);
+  border-right: 1px solid var(--background-color-default);
+  padding: 4px 8px;
+  height: 40px;
+  background: var(--background-color-toolbar);
 }
 
-.tabs {
-  padding: 0;
+.ruler-corner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  background: var(--background-color-default);
 }
 
-.tab-item {
-  height: 30px;
-  line-height: 30px;
-  vertical-align: middle;
-  border-bottom: 1px solid #f2f2f2;
-  padding: 2px 8px;
+.ruler-hori {
+  position: absolute !important;
+  left: 16px;
+  top: 0;
+  width: calc(100% - 16px);
+  height: 16px;
+  background: var(--background-color-default);
 }
 
-.tab-item[selected='true'] {
-  border-color: var(--color-light-high);
+.ruler-vert {
+  position: absolute !important;
+  left: 0;
+  top: 16px;
+  width: 16px;
+  height: calc(100% - 16px);
+  background: var(--background-color-default);
+}
+
+.rightbar {
+  flex: 0 0 0%;
+  min-width: 40px;
+  background: var(--background-color-toolbar);
+  display: flex;
+  flex-direction: column;
 }
 </style>
