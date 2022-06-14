@@ -1,11 +1,4 @@
 declare module 'vspage' {
-  /** 环境配置 */
-  type Env = {
-    base: string;
-    host: string;
-    nonce: string;
-  }
-
   /** 页面内容 */
   interface PageData {
     scoped: string;
@@ -17,8 +10,6 @@ declare module 'vspage' {
 
   /** 编辑器服务接口 */
   interface VsPage {
-    /** 初始化 */
-    initialize(env: Env): void;
     /** 更新app配置 */
     syncAppConfig(appConfig: AppConfig): void;
     /** 设置当前页面 */

@@ -60,7 +60,7 @@ export class WebView {
   private disposables: vscode.Disposable[] = [];
   private nonce: string = getNonce();
   private vspage: VsPage;
-  private service: Service = new Service();
+  private service: Service;
   private exclude: Array<string>;
   private compilerOptions: ts.CompilerOptions;
   private workspacePath: string;
@@ -120,6 +120,9 @@ export class WebView {
       },
     } as any as vscode.ExtensionTerminalOptions);
     this.terminal.show(true);
+
+    // init service
+    this.service = new Service(writeEmitter);
 
     // init vspage
     this.vspage = new VsPage(this.panel.webview, this.service);
@@ -361,6 +364,7 @@ export class WebView {
     this.panel.dispose();
     this.terminal.dispose();
     this.vspage.dispose();
+    this.service.dispose();
     WebView.currentPanel = undefined;
   }
 

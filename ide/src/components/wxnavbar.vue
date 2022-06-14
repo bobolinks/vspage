@@ -1,6 +1,5 @@
 <template>
   <div class="navbar" :mode="options.navigationStyle" :style="{
-    backgroundColor: options.navigationBarBackgroundColor,
     color: options.navigationBarTextStyle || 'black',
   }" style="align-items: center; display: flex; flex-direction: row">
     <div style="width: 87px"></div>

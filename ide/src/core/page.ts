@@ -147,6 +147,14 @@ export class TPage implements WxPageInstance {
       Object.assign(this.iframe.contentWindow, wxGlobal);
       (this.iframe.contentWindow as any).wx = wx;
       (this.iframe.contentWindow as any).Component = function (o: any) {
+        const props = o.properties || {};
+        const data = o.data || (o.data = {});
+        for (const [k, it] of Object.entries(props)) {
+          const { default: vv } = it as any;
+          if (vv !== undefined) {
+            data[k] = vv;
+          }
+        }
         return (window as any).Page(o);
       };
       if (config.wxml) {

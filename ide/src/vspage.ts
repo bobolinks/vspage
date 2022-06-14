@@ -1,16 +1,13 @@
 
 import { readonly } from 'vue';
-import { VsPage as IVsPage, VsCode as IVsCode, Editor as IEditor, Env, StylePatch, PageData, MessageData } from 'vspage';
+import { VsPage as IVsPage, VsCode as IVsCode, Editor as IEditor, StylePatch, PageData, MessageData } from 'vspage';
 import store from './store';
 import wxApp from './core/app';
-import { updateSelector } from './core/page';
+import { renderPage, updateSelector } from './core/page';
 
 const w = window as any;
 
 export const VsPage = new class implements IVsPage {
-  initialize(env: Env): void {
-    Object.assign(store.env, env);
-  }
   syncAppConfig(appConfig: AppConfig): void {
     Object.assign(store.config, appConfig);
     wxApp.relaunch({});
@@ -22,7 +19,18 @@ export const VsPage = new class implements IVsPage {
     });
   }
   updatePage(path: string, data: Partial<PageData>): void {
-    throw new Error('Method not implemented.');
+    if (!store.pages.length || (!data.wxml && !data.json)) {
+      return;
+    }
+    const page = store.pages[store.pages.length - 1];
+    if (data.wxml) {
+      (page.iframe.contentWindow as any).wxml = data.wxml;
+    }
+    if (data.json) {
+      page.config = data.json;
+      store.page = data.json;
+    }
+    renderPage(page);
   }
   select(target: string | null): void {
     const simulator = document.querySelector('#simulator > iframe') as HTMLIFrameElement;
@@ -101,7 +109,7 @@ export const VsCode = new class implements IVsCode {
     return new Promise((resolve, reject) => {
       req.resolve = resolve;
       req.reject = reject;
-      window.postMessage(m, '*');
+      window.parent?.postMessage(m, '*');
     })
       .then((rsp) => {
         clearTimeout(req.timer);
@@ -124,7 +132,7 @@ export const VsCode = new class implements IVsCode {
       });
   }
   private response(data: any, r: MessageRequest, code?: number) {
-    window.postMessage({ toService: true, isrsp: true, token: r.token, method: r.method, code, data }, '*');
+    window.parent?.postMessage({ toService: true, isrsp: true, token: r.token, method: r.method, code, data }, '*');
   }
 };
 

@@ -1,6 +1,6 @@
 
 import * as vscode from 'vscode';
-import { VsPage as IVsPage, Env, PageData } from 'vspage';
+import { VsPage as IVsPage, PageData } from 'vspage';
 import { Service } from './service';
 
 export class VsPage implements IVsPage, vscode.Disposable {
@@ -35,12 +35,6 @@ export class VsPage implements IVsPage, vscode.Disposable {
   select(target: string | null): void {
     this.request({
       method: 'select',
-      params: [...arguments],
-    });
-  }
-  initialize(env: Env): void {
-    this.request({
-      method: 'initialize',
       params: [...arguments],
     });
   }

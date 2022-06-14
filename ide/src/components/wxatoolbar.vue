@@ -1,5 +1,8 @@
 <template>
-  <div class="devbar" :mode="options.navigationStyle" style="display: flex; flex-direction: column; width: 100%">
+  <div class="devbar" :mode="options.navigationStyle" :style="{
+    display: 'flex', 'flex-direction': 'column', width: '100%',
+    backgroundColor: options.navigationBarBackgroundColor || 'white',
+  }">
     <StatusBar :options="options" :sysinfo="sysinfo"></StatusBar>
     <NavBar :options="options"></NavBar>
   </div>

@@ -25,7 +25,7 @@ export default function (code: string, filePath: string): string {
     </script>
   </head>
   <body style='height:100%; height: 100%'>
-  loading...
+    <span style='font-size: 32px; color: gray; display: flex; justify-content: center; align-items: center; height: 100%;'>loading...</span>
   </body>
 </html>
   `;
