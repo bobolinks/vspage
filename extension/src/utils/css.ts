@@ -1,5 +1,4 @@
 /* eslint-disable no-restricted-syntax */
-import path from 'path';
 import css, { Declaration, Import, Rule } from 'css';
 
 type TyThemeVar = {
@@ -9,6 +8,51 @@ type TyThemeVar = {
 };
 
 export type TyTheme = TyMap<TyThemeVar>;
+
+function processRule(rule: Rule, scoped: string | undefined) {
+  if (!rule.selectors) {
+    return;
+  }
+  rule.selectors = rule.selectors.map(e => e.split(' ').map((name) => {
+    if (name === 'html' || name === 'body') {
+      return name;
+    } if (name === 'page') {
+      return 'html';
+    }
+    if (/^\w/.test(name) && /^(?!wx-)/.test(name)) {
+      return `wx-${name}`;
+    }
+    return name;
+  })
+    .join(' ') + (scoped ? `[${scoped}]` : ''));
+  for (const declaration of rule.declarations || []) {
+    if (declaration.type !== 'declaration') continue;
+    const decl = declaration as Declaration;
+    if (!decl.value) continue;
+    let v = decl.value;
+    // process rpx in calc
+    while (v.indexOf('rpx') !== -1) {
+      const nv = v.replace(/calc(\(|(?:\([^)]*[\s-+/*]))(\d+)rpx(\)|(?:[\s-+/*][^)]*\)))/gm, 'calc$1var(--devicePixelRatio) * $2px$3');
+      if (nv !== v) {
+        v = nv;
+      } else {
+        break;
+      }
+    }
+    // process rpx in others
+    while (v.indexOf('rpx') !== -1) {
+      const nv = v.replace(/(^|[\s+/*])(-?\d+)rpx/gm, '$1calc(var(--devicePixelRatio) * $2px)');
+      if (nv !== v) {
+        v = nv;
+      } else {
+        break;
+      }
+    }
+    if (v !== decl.value) {
+      decl.value = v;
+    }
+  }
+}
 
 export default {
   inlineStyleToAst(src: string) {
@@ -40,60 +84,21 @@ export default {
     }
     return src.replace(/; $/, ';');
   },
-  transform(prjUrl: string, code: string, filePath?: string): string {
+  wxss(code: string, scoped: string | undefined): string {
     const ast = css.parse(code);
     for (const it of ast.stylesheet?.rules || []) {
       if (it.type === 'rule') {
-        const rule = it as Rule;
-        if (!rule.selectors) continue;
-        rule.selectors = rule.selectors.map(e => e.split(' ').map((name) => {
-          if (name === 'html' || name === 'body') {
-            return name;
+        processRule(it as Rule, scoped);
+      } else if (it.type === 'media') {
+        for (const itsub of (it as any).rules || []) {
+          if (itsub.type !== 'rule') {
+            continue;
           }
-          if (/^\w/.test(name) && /^(?!wx-)/.test(name)) {
-            return `wx-${name}`;
-          }
-          return name;
-        })
-          .join(' '));
-        for (const declaration of rule.declarations || []) {
-          if (declaration.type !== 'declaration') continue;
-          const decl = declaration as Declaration;
-          if (!decl.value) continue;
-          let v = decl.value;
-          // process rpx in calc
-          while (v.indexOf('rpx') !== -1) {
-            const nv = v.replace(/calc(\(|(?:\([^)]*[\s-+/*]))(\d+)rpx(\)|(?:[\s-+/*][^)]*\)))/gm, 'calc$1var(--devicePixelRatio) * $2px$3');
-            if (nv !== v) {
-              v = nv;
-            } else {
-              break;
-            }
-          }
-          // process rpx in others
-          while (v.indexOf('rpx') !== -1) {
-            const nv = v.replace(/(^|[\s+/*])(-?\d+)rpx/gm, '$1calc(var(--devicePixelRatio) * $2px)');
-            if (nv !== v) {
-              v = nv;
-            } else {
-              break;
-            }
-          }
-          if (v !== decl.value) {
-            decl.value = v;
-          }
-        }
-      } else if (it.type === 'import' && filePath) {
-        const imp = it as Import;
-        if (imp.import) {
-          const url = imp.import.replace(/^['"]/, '').replace(/['"]$/, '');
-          if (!/^http[s]?:/.test(url)) {
-            imp.import = `'${prjUrl}/${path.resolve(filePath, url)}'`;
-          }
+          processRule(itsub as Rule, scoped);
         }
       }
     }
 
     return css.stringify(ast);
-  },
+  }
 };

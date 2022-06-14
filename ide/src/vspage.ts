@@ -16,7 +16,10 @@ export const VsPage = new class implements IVsPage {
     wxApp.relaunch({});
   }
   setCurrentPage(path: string, data: PageData): void {
-    throw new Error('Method not implemented.');
+    wx.redirectTo({
+      ...data,
+      url: path,
+    });
   }
   updatePage(path: string, data: Partial<PageData>): void {
     throw new Error('Method not implemented.');
@@ -53,7 +56,7 @@ export const VsCode = new class implements IVsCode {
         const req = message as MessageRequest;
         const method = (VsPage as any)[message.method];
         if (method) {
-          const rs = await method.call(method, ...req.params);
+          const rs = await method.call(VsPage, ...req.params);
           try {
             this.response(rs, req);
           } catch (e) {
@@ -98,7 +101,7 @@ export const VsCode = new class implements IVsCode {
     return new Promise((resolve, reject) => {
       req.resolve = resolve;
       req.reject = reject;
-      VsCodeApi?.postMessage(m);
+      window.postMessage(m, '*');
     })
       .then((rsp) => {
         clearTimeout(req.timer);
@@ -121,7 +124,7 @@ export const VsCode = new class implements IVsCode {
       });
   }
   private response(data: any, r: MessageRequest, code?: number) {
-    VsCodeApi?.postMessage({ toService: true, isrsp: true, token: r.token, method: r.method, code, data });
+    window.postMessage({ toService: true, isrsp: true, token: r.token, method: r.method, code, data }, '*');
   }
 };
 

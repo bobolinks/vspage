@@ -17,6 +17,9 @@ function getNonce() {
   return text;
 }
 
+const vspageConfigFile = '.vspage/config.json';
+const miniProjectConfigFile = 'project.config.json';
+
 export class WebView {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
@@ -62,6 +65,7 @@ export class WebView {
   private compilerOptions: ts.CompilerOptions;
   private workspacePath: string;
   private projectPath: string;
+  private minirootPath: string;
   private curPagePath: string | undefined;
   private curPage: PageData | undefined;
 
@@ -76,14 +80,24 @@ export class WebView {
 
     // load vspage config
     this.exclude = [];
-    const vspageConfigPath = path.join(this.workspacePath, '.vspage/config.json');
+    const vspageConfigPath = path.join(this.workspacePath, vspageConfigFile);
     if (fs.existsSync(vspageConfigPath)) {
       const config = JSON.parse(fs.readFileSync(vspageConfigPath, 'utf-8'));
       if (config.projectRoot) {
-        this.projectPath = utils.path.compatible(path.resolve(this.workspacePath, config.projectRoot));
+        this.projectPath = path.resolve(this.workspacePath, config.projectRoot);
       }
       if (config.exclude) {
         this.exclude = config.exclude as any;
+      }
+    }
+
+    // load mini project config
+    this.minirootPath = this.projectPath;
+    const miniProjectConfigPath = path.join(this.projectPath, miniProjectConfigFile);
+    if (fs.existsSync(miniProjectConfigPath)) {
+      const config = JSON.parse(fs.readFileSync(miniProjectConfigPath, 'utf-8'));
+      if (config.miniprogramRoot) {
+        this.minirootPath = path.resolve(this.projectPath, config.miniprogramRoot);
       }
     }
 
@@ -186,13 +200,13 @@ export class WebView {
     if (!ext) {
       return;
     }
-    if (!/^wxml|wxss|ts|js|json$/i.test(ext)) {
+    if (!/^wxml|json$/i.test(ext)) {
       return;
     }
     /** is config file for vspage ? */
     const relPath = utils.path.relative(this.projectPath, curPath);
-    if (relPath === '.vspage/config.json') {
-      const vspageConfigPath = path.join(this.workspacePath, '.vspage/config.json');
+    if (relPath === vspageConfigFile) {
+      const vspageConfigPath = path.join(this.workspacePath, vspageConfigFile);
       if (fs.existsSync(vspageConfigPath)) {
         const config = JSON.parse(fs.readFileSync(vspageConfigPath, 'utf-8'));
         if (config.projectRoot) {
@@ -208,13 +222,13 @@ export class WebView {
     if (!this.curPage) {
       return;
     }
-    const absWxmlPath = curPath.replace(/\.(wxss|json|ts|js)$/, '.wxml');
-    const relPagePath = utils.path.relative(this.projectPath, absWxmlPath);
+    const absWxmlPath = curPath.replace(/\.json$/, '.wxml');
+    const relPagePath = utils.path.relative(this.minirootPath, absWxmlPath).replace(/\.\w+$/, '');
     /** page not matched */
     if (relPagePath !== this.curPagePath) {
       return;
     }
-    const name = ext.toLocaleLowerCase().replace(/^\.[tj]s$/, 'wxxs') as 'wxml' | 'wxss' | 'wxxs' | 'json';
+    const name = ext.toLocaleLowerCase().replace(/^\.[tj]s$/, 'wxxs') as 'wxml' | 'json';
     const src = e.document.getText();
     if (this.curPage[name] === src) {
       return;
@@ -234,7 +248,7 @@ export class WebView {
     }
     if (relPath === 'tsconfig.json') {
       this.reloadTsConfig();
-    } else if (relPath === '.vspage/config.json') {
+    } else if (relPath === vspageConfigFile) {
       this.reloadVsPageConfig();
     } else if (/(?<!\.d)\.ts/i.test(relPath) && !utils.isMatchedVx(relPath, this.exclude)) {
       const jsFile = utils.path.compatible(e.uri.path.replace(/\.ts$/, '.js'));
@@ -255,8 +269,14 @@ export class WebView {
       this.currentEditor = undefined;
       return;
     }
+
     const curPath = utils.path.compatible(editor.document.uri.path);
-    const relPath = utils.path.relative(this.projectPath, curPath);
+    const relPagePath = utils.path.relative(this.minirootPath, curPath).replace(/\.\w+$/, '');
+    /** page chaned? */
+    if (relPagePath === this.curPagePath) {
+      return;
+    }
+
     if (/\.wxml$/.test(curPath)) {
       const pagePath = curPath.replace(/\.wxml$/, '');
       let esmFile = `${pagePath}.ts`;
@@ -267,15 +287,14 @@ export class WebView {
         }
       }
       this.curPage = {
-        scoped: md5(`/${relPath}`),
+        scoped: md5(`/${relPagePath}`),
         wxml: editor.document.getText(),
-        wxss: fs.readFileSync(`${pagePath}.wxss`, 'utf-8'),
-        wxxs: fs.readFileSync(esmFile, 'utf-8'),
+        // wxss: fs.readFileSync(`${pagePath}.wxss`, 'utf-8'),
         json: JSON.parse(fs.readFileSync(`${pagePath}.json`, 'utf-8')) as any,
       };
-      this.vspage.setCurrentPage(relPath, this.curPage);
+      this.vspage.setCurrentPage(relPagePath, this.curPage);
       this.currentEditor = editor;
-      this.curPagePath = relPath;
+      this.curPagePath = relPagePath;
       try {
         this.panel.title = path.basename(editor.document.fileName);
       } catch (e) {
@@ -296,7 +315,7 @@ export class WebView {
       return;
     }
 
-    const relPagePath = utils.path.relative(this.projectPath, curPath);
+    const relPagePath = utils.path.relative(this.minirootPath, curPath).replace(/\.\w+$/, '');
     /** page not matched */
     if (relPagePath !== this.curPagePath) {
       return;
@@ -355,7 +374,7 @@ export class WebView {
     }
   }
   private reloadVsPageConfig() {
-    const vspageConfigPath = path.join(this.workspacePath, '.vspage/config.json');
+    const vspageConfigPath = path.join(this.workspacePath, vspageConfigFile);
     if (fs.existsSync(vspageConfigPath)) {
       const config = JSON.parse(fs.readFileSync(vspageConfigPath, 'utf-8'));
       if (config.projectRoot) {

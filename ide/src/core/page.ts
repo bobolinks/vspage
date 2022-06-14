@@ -1,3 +1,4 @@
+import { PageData } from 'vspage';
 import store, { files } from '../store';
 import { TyAttrsMap } from '../utils/dom';
 import { Sys, Cache, Wxml, Dom } from '../utils/index';
@@ -95,12 +96,11 @@ export class TPage implements WxPageInstance {
   is: string;
   route: string;
   options: Record<string, string | undefined>;
-  config: any;
+  config: PageConfig;
   iframe: HTMLIFrameElement;
   path: string;
-  url: string;
   scoped: string;
-  constructor(url: string, config: any) {
+  constructor(public url: string, config: Partial<PageData>) {
     const path = url.split('?')[0];;
     const id = path.replace(/[^0-9a-z-]/ig, '-');
     this.data = {};
@@ -109,9 +109,9 @@ export class TPage implements WxPageInstance {
     this.is = '';
     this.route = '';
     this.options = {};
-    this.config = config;
-    if (config.usingComponents) {
-      formatUsingCompoents(config.usingComponents, path);
+    this.config = config.json || {};
+    if (this.config.usingComponents) {
+      formatUsingCompoents(this.config.usingComponents, path);
     }
     this.scoped = `scoped-${Sys.randomString(6)}`;
     this.iframe = document.createElement('iframe');
@@ -121,7 +121,8 @@ export class TPage implements WxPageInstance {
       if (!this.iframe.contentDocument) {
         throw '';
       }
-      const stylesheets = document.getElementsByName('cssshr');
+      const d = this.iframe.contentDocument;
+      const stylesheets = d.getElementsByName('cssshr');
       let cssCode: Array<string> = [cssEditor];
       let links: Array<string> = [];
       stylesheets.forEach(e => {
@@ -131,56 +132,62 @@ export class TPage implements WxPageInstance {
           cssCode.push(e.innerHTML);
         }
       });
-      const head = this.iframe.contentDocument.head;
+      const head = d.head;
       if (cssCode.length) {
-        const style = document.createElement('style');
+        const style = d.createElement('style');
         style.innerHTML = cssCode.join('\n');
         head.insertBefore(style, head.children[0]);
       }
       links.forEach(link => {
-        const l = document.createElement('link');
+        const l = d.createElement('link');
         l.rel = 'stylesheet';
         l.href = link;
         head.insertBefore(l, head.children[1]);
       });
       Object.assign(this.iframe.contentWindow, wxGlobal);
       (this.iframe.contentWindow as any).wx = wx;
+      (this.iframe.contentWindow as any).Component = function (o: any) {
+        return (window as any).Page(o);
+      };
+      if (config.wxml) {
+        (this.iframe.contentWindow as any).wxml = config.wxml;
+      }
       const t = Cache.findStamp(path, files);
-      Sys.mountModule(`module-page-${id}`, path, t, {});
+      Sys.mountModule(`module-page-${id}`, path, t, {}, d);
     });
   }
   setUpdatePerformanceListener<WithDataPath extends boolean = false>(options: WechatMiniprogram.Component.SetUpdatePerformanceListenerOption<WithDataPath>, callback?: WechatMiniprogram.Component.UpdatePerformanceListener<WithDataPath>): void {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   onLoad(arg?: Record<string, string | undefined>): void | Promise<void> { }
   onShow(arg?: unknown): void | Promise<void> { }
   onReady(arg?: unknown): void | Promise<void> { }
   onHide(arg?: unknown): void | Promise<void> {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   onUnload(arg?: unknown): void | Promise<void> {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   onPullDownRefresh(arg?: unknown): void | Promise<void> {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   onReachBottom(arg?: unknown): void | Promise<void> {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   onShareAppMessage(arg?: WechatMiniprogram.Page.IShareAppMessageOption): void | WechatMiniprogram.Page.ICustomShareContent {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   onShareTimeline(arg?: unknown): void | WechatMiniprogram.Page.ICustomTimelineContent {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   onPageScroll(arg?: WechatMiniprogram.Page.IPageScrollOption): void | Promise<void> {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   onTabItemTap(arg?: WechatMiniprogram.Page.ITabItemTapOption): void | Promise<void> {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   onResize(arg?: WechatMiniprogram.Page.IResizeOption): void | Promise<void> {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   onAddToFavorites(arg?: WechatMiniprogram.Page.IAddToFavoritesOption): WechatMiniprogram.Page.IAddToFavoritesContent {
     throw new Error('Method not implemented.');
@@ -190,10 +197,10 @@ export class TPage implements WxPageInstance {
     renderPage(this);
   }
   hasBehavior(behavior: string): void {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   triggerEvent<DetailType = any>(name: string, detail?: DetailType, options?: WechatMiniprogram.Component.TriggerEventOption): void {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   createSelectorQuery(): WechatMiniprogram.SelectorQuery {
     throw new Error('Method not implemented.');
@@ -214,7 +221,7 @@ export class TPage implements WxPageInstance {
     throw new Error('Method not implemented.');
   }
   groupSetData(callback?: () => void): void {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   getTabBar(): WechatMiniprogram.Component.TrivialInstance {
     throw new Error('Method not implemented.');
@@ -225,12 +232,12 @@ export class TPage implements WxPageInstance {
   animate(selector: string, keyFrames: WechatMiniprogram.Component.KeyFrame[], duration: number, callback?: () => void): void;
   animate(selector: string, keyFrames: WechatMiniprogram.Component.ScrollTimelineKeyframe[], duration: number, scrollTimeline: WechatMiniprogram.Component.ScrollTimelineOption): void;
   animate(selector: any, keyFrames: any, duration: any, scrollTimeline?: any): void {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   clearAnimation(selector: string, callback: () => void): void;
   clearAnimation(selector: string, options?: WechatMiniprogram.Component.ClearAnimationOptions, callback?: () => void): void;
   clearAnimation(selector: any, options?: any, callback?: any): void {
-    throw new Error('Method not implemented.');
+    console.debug('Method not implemented.');
   }
   getOpenerEventChannel(): WechatMiniprogram.EventChannel {
     throw new Error('Method not implemented.');

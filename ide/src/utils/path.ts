@@ -7,10 +7,10 @@ export default {
     if (to[0] === '/') {
       return to;
     } if (to[0] !== '.') {
-      return `${from.replace(/\/$/, '')}/${to}`;
+      return `/${to}`;
     }
-    const bnames = from.split('/');
-    const tnames = to.split('/');
+    const bnames = from.split('/').filter(e => e);
+    const tnames = to.split('/').filter(e => e);
     if (bnames.length) bnames.pop();
     for (const iterator of tnames) {
       if (iterator === '..') {
@@ -21,6 +21,6 @@ export default {
         bnames.push(iterator);
       }
     }
-    return bnames.join('/');
+    return `/${bnames.join('/')}`;
   },
 };

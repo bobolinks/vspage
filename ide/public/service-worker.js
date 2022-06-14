@@ -1,3 +1,15 @@
+this.addEventListener('install', function (event) {
+  event.waitUntil(
+    caches.open('v1').then(function (cache) {
+      return cache.addAll([
+        '/__ide__/',
+        '/__ide__/index.html',
+        '/__ide__/WAWebview-2.19.4.js',
+      ]);
+    })
+  );
+});
+
 self.addEventListener('fetch', function (event) {
   event.respondWith(
     caches.match(event.request).then(function (response) {

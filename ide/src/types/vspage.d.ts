@@ -6,15 +6,12 @@ declare module 'vspage' {
     nonce: string;
   }
 
-  type HtmlCode = string;
-  type CssCode = string;
-  type SourceCode = string;
   /** 页面内容 */
   interface PageData {
     scoped: string;
-    wxml: HtmlCode;
-    wxss: CssCode;
-    wxxs: SourceCode;
+    /** wxml code */
+    wxml: string;
+    /** page options */
     json: PageConfig;
   }
 

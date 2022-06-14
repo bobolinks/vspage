@@ -11,7 +11,6 @@ import xs from './transformers/xs';
 import wxss from './transformers/css';
 import less from './transformers/less';
 import sass from './transformers/sass';
-import scss from './transformers/scss';
 import wxml from './transformers/wxml';
 import wxfs from './fs';
 
