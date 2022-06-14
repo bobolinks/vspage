@@ -275,6 +275,7 @@ export class WebView {
       };
       this.vspage.setCurrentPage(relPath, this.curPage);
       this.currentEditor = editor;
+      this.curPagePath = relPath;
       try {
         this.panel.title = path.basename(editor.document.fileName);
       } catch (e) {
@@ -284,6 +285,23 @@ export class WebView {
   }
   private onDidChangeTextEditorSelection(e: vscode.TextEditorSelectionChangeEvent) {
     if (this.currentEditor !== e.textEditor || !e.selections?.length) return;
+
+    const curPath = utils.path.compatible(e.textEditor.document.uri.path);
+    /** ignore all files without ext */
+    const ext = curPath.split('.').pop();
+    if (!ext) {
+      return;
+    }
+    if (!/^wxml$/i.test(ext)) {
+      return;
+    }
+
+    const relPagePath = utils.path.relative(this.projectPath, curPath);
+    /** page not matched */
+    if (relPagePath !== this.curPagePath) {
+      return;
+    }
+
     function contentFromPosition(code: string, line: number, charPos: number) {
       const lines = code.split('\n');
       const lastLine = lines[line];

@@ -15,22 +15,34 @@ export class VsPage implements IVsPage, vscode.Disposable {
     }
   }
   syncAppConfig(appConfig: AppConfig): void {
-    throw new Error('Method not implemented.');
+    this.request({
+      method: 'syncAppConfig',
+      params: [...arguments],
+    });
   }
   setCurrentPage(path: string, data: PageData): void {
-    throw new Error('Method not implemented.');
+    this.request({
+      method: 'setCurrentPage',
+      params: [...arguments],
+    });
   }
   updatePage(path: string, data: Partial<PageData>): void {
-    throw new Error('Method not implemented.');
+    this.request({
+      method: 'updatePage',
+      params: [...arguments],
+    });
   }
   select(target: string | null): void {
-    throw new Error('Method not implemented.');
+    this.request({
+      method: 'select',
+      params: [...arguments],
+    });
   }
   initialize(env: Env): void {
-    throw new Error('Method not implemented.');
-  }
-  setPage(page: string): void {
-    throw new Error('Method not implemented.');
+    this.request({
+      method: 'initialize',
+      params: [...arguments],
+    });
   }
   async onDidReceiveMessage(message: MessageBase) {
     if ((message as MessageResponse).isrsp) {
@@ -59,7 +71,7 @@ export class VsPage implements IVsPage, vscode.Disposable {
   private response(data: any, r: MessageRequest, code?: number) {
     this.webview.postMessage({ isrsp: true, token: r.token, method: r.method, code, data });
   }
-  private request(m: MessageBase): Promise<any> {
+  private request(m: MessageBase & { params: Array<any>; }): Promise<any> {
     (m as MessageRequest).token = this.token++;
     const req = Object.assign({}, m) as unknown as MessageRequest;
     req.timer = setTimeout(((token: number) => {

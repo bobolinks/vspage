@@ -1,3 +1,4 @@
+import { Env } from "vspage";
 import { watch, readonly } from "vue";
 import { createStore } from "vuex";
 import { TComponentClass } from "./core/component";
@@ -5,6 +6,7 @@ import { TPage } from "./core/page";
 import { FileCache } from "./utils/cache";
 
 const state = {
+  env: {} as Env,
   /** app.json */
   config: {
     pages: [],
