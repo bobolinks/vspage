@@ -1,11 +1,23 @@
 
 import { readonly } from 'vue';
-import { VsPage as IVsPage, Output as IOutput, Editor as IEditor, AlertData, Env, StylePatch } from 'vspage';
+import { VsPage as IVsPage, VsCode as IVsCode, Editor as IEditor, Env, StylePatch, PageData, MessageData } from 'vspage';
 import store from './store';
 
 const w = window as any;
 
 export const VsPage = new class implements IVsPage {
+  syncAppConfig(appConfig: AppConfig): void {
+    throw new Error('Method not implemented.');
+  }
+  setCurrentPage(path: string, data: PageData): void {
+    throw new Error('Method not implemented.');
+  }
+  updatePage(path: string, data: Partial<PageData>): void {
+    throw new Error('Method not implemented.');
+  }
+  select(target: string | null): void {
+    throw new Error('Method not implemented.');
+  }
   initialize(env: Env): void {
     throw new Error('Method not implemented.');
   }
@@ -16,13 +28,19 @@ export const VsPage = new class implements IVsPage {
 
 w.VsPage = VsPage;
 
-export const Output = new class implements IOutput {
-  alert(data: string | AlertData): void {
+export const VsCode = new class implements IVsCode {
+  patchStyle(target: string, patch: StylePatch): void {
+    throw new Error('Method not implemented.');
+  }
+  select(target: string | null): void {
+    throw new Error('Method not implemented.');
+  }
+  alert(data: string | MessageData): void {
     throw new Error('Method not implemented.');
   }
 };
 
-w.Output = Output;
+w.VsCode = VsCode;
 
 export const Editor = new class implements IEditor {
   select(element: HTMLElement | null): void {

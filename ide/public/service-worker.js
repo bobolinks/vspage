@@ -4,7 +4,7 @@ self.addEventListener('fetch', function (event) {
       if (response) {
         return response;
       }
-      const url = event.request.url.replace(/^(http[s]?:\/\/localhost:\d+\/)((?!__wesim__|__rpc__|__FS__|__app__\/).*)(.+)$/, '$1__app__/$2$3');
+      const url = event.request.url.replace(/^(http[s]?:\/\/localhost:\d+\/)((?!__ide__|__rpc__|__FS__|__app__\/).*)(.+)$/, '$1__app__/$2$3');
       const request = new Request(url, {
         method: event.request.method,
         headers: event.request.headers,

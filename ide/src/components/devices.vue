@@ -57,10 +57,9 @@ const onChanged = (ev: any) => {
 <style scoped>
 .select {
   border: none;
-  font-size: 14px;
-  line-height: 14px;
+  font-size: 12px;
+  height: 26px;
   vertical-align: middle;
-  padding: 4px 10px;
   border-radius: 4px;
   color: var(--color-content);
   background-color: var(--background-color-popver);

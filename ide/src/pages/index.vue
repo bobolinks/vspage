@@ -196,6 +196,7 @@ const changeTheme = () => {
 .topbar {
   display: flex;
   flex-direction: row;
+  align-items: center;
   /* z-index: 9999; */
   /* height: 30px; */
   border-bottom: 1px solid var(--border-color-default);

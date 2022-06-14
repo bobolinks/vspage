@@ -65,7 +65,7 @@ export function showPopover(el: HTMLElement, ev: Event) {
   pointer-events: none;
   position: absolute;
   overflow: visible;
-  z-index: 100;
+  z-index: 9999;
   transition: all 0.3s ease-out;
   display: none;
 }

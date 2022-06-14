@@ -37,7 +37,7 @@ export default {
     wxfs.installFileSystem(expr);
     expr.use('/__app__', async (request, response, next) => {
       let [url, query] = request.originalUrl.split('?');
-      const filePathRel = url.replace(/^\/+__app__\//, '');
+      let filePathRel = url.replace(/^\/+__app__\//, '');
       if (!filePathRel) {
         return next();
       }
@@ -47,34 +47,50 @@ export default {
         query = '';
       }
       let filePath = path.resolve(env.paths.miniroot, filePathRel);
-      const exists = fs.existsSync(filePath);
+      let exists = fs.existsSync(filePath);
       if (exists && fs.statSync(filePath).isDirectory()) {
-        return response.redirect(`/${request.path}/index`.replace(/\/\/+/, '/'));
-      } if (!exists) {
+        filePathRel += `${filePathRel}/index`;
+        exists = false;
+        // return response.redirect(`/${request.path}/index`.replace(/\/\/+/, '/'));
+      }
+      if (!exists) {
         for (const it of ['.ts', '.js']) {
           if (fs.existsSync(filePath + it)) {
-            return response.redirect(302, `/__app__/${filePathRel}${it}${query}`);
-            // break;
+            filePathRel = filePathRel + it;
+            exists = true;
+            // return response.redirect(302, `/__app__/${filePathRel}${it}${query}`);
+            break;
           }
         }
-        if (/^\/node_modules\//.test(filePathRel)) {
-          const newPath = lookupModule(env.paths.miniroot, filePathRel.substring(14));
-          if (newPath) {
-            return response.redirect(302, `/__app__/${newPath}${query}`);
+        if (!exists) {
+          if (/^\/node_modules\//.test(filePathRel)) {
+            const newPath = lookupModule(env.paths.miniroot, filePathRel.substring(14));
+            if (newPath) {
+              filePathRel = newPath;
+              exists = true;
+              // return response.redirect(302, `/__app__/${newPath}${query}`);
+            }
+          } else if (/\.(css|wxss)/.test(filePathRel)) {
+            if (fs.existsSync(filePath.replace(/\.css$/i, '.less'))) {
+              filePathRel = filePathRel.replace(/\.css$/i, '.less');
+              exists = true;
+              // return response.redirect(302, `/__app__/${filePathRel.replace(/\.css$/i, '.less')}${query}`);
+            } else if (fs.existsSync(filePath.replace(/\.css$/i, '.sass'))) {
+              filePathRel = filePathRel.replace(/\.css$/i, '.sass');
+              exists = true;
+              // return response.redirect(302, `/__app__/${filePathRel.replace(/\.css$/i, '.sass')}${query}`);
+            } else if (fs.existsSync(filePath.replace(/\.css$/i, '.scss'))) {
+              filePathRel = filePathRel.replace(/\.css$/i, '.scss');
+              exists = true;
+              // return response.redirect(302, `/__app__/${filePathRel.replace(/\.css$/i, '.scss')}${query}`);
+            }
           }
         }
-        if (/\.(css|wxss)/.test(filePathRel)) {
-          if (fs.existsSync(filePath.replace(/\.css$/i, '.less'))) {
-            return response.redirect(302, `/__app__/${filePathRel.replace(/\.css$/i, '.less')}${query}`);
-          }
-          if (fs.existsSync(filePath.replace(/\.css$/i, '.sass'))) {
-            return response.redirect(302, `/__app__/${filePathRel.replace(/\.css$/i, '.sass')}${query}`);
-          }
-          if (fs.existsSync(filePath.replace(/\.css$/i, '.scss'))) {
-            return response.redirect(302, `/__app__/${filePathRel.replace(/\.css$/i, '.scss')}${query}`);
-          }
+        if (!exists) {
+          return next();
+        } else {
+          filePath = path.resolve(env.paths.miniroot, filePathRel);
         }
-        return next();
       }
 
       const stats = fs.statSync(filePath);

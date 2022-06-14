@@ -1,6 +1,6 @@
 import state from '../store';
 import { voidElements } from '../utils/html';
-import { Output, Editor } from '../vspage';
+import { VsCode, Editor } from '../vspage';
 import { StylePatch } from 'vspage';
 
 export const isNotContainer = (): boolean => {
@@ -23,7 +23,7 @@ export const layout: TyActionGroup = {
     excute() {
       const ast = state.swap.ast;
       if (!ast) {
-        Output.alert({ type: 'error', message: '未选中任何元素' });
+        VsCode.alert({ type: 'error', message: '未选中任何元素' });
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
@@ -50,7 +50,7 @@ export const layout: TyActionGroup = {
     excute() {
       const ast = state.swap.ast;
       if (!ast) {
-        Output.alert({ type: 'error', message: '未选中任何元素' });
+        VsCode.alert({ type: 'error', message: '未选中任何元素' });
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
@@ -87,7 +87,7 @@ export const layout: TyActionGroup = {
     excute() {
       const ast = state.swap.ast;
       if (!ast) {
-        Output.alert({ type: 'error', message: '未选中任何元素' });
+        VsCode.alert({ type: 'error', message: '未选中任何元素' });
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
@@ -123,7 +123,7 @@ export const layout: TyActionGroup = {
     excute() {
       const ast = state.swap.ast;
       if (!ast) {
-        Output.alert({ type: 'error', message: '未选中任何元素' });
+        VsCode.alert({ type: 'error', message: '未选中任何元素' });
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
@@ -159,7 +159,7 @@ export const layout: TyActionGroup = {
     excute() {
       const ast = state.swap.ast;
       if (!ast) {
-        Output.alert({ type: 'error', message: '未选中任何元素' });
+        VsCode.alert({ type: 'error', message: '未选中任何元素' });
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
@@ -195,7 +195,7 @@ export const layout: TyActionGroup = {
     excute() {
       const ast = state.swap.ast;
       if (!ast) {
-        Output.alert({ type: 'error', message: '未选中任何元素' });
+        VsCode.alert({ type: 'error', message: '未选中任何元素' });
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
@@ -231,7 +231,7 @@ export const layout: TyActionGroup = {
     excute() {
       const ast = state.swap.ast;
       if (!ast) {
-        Output.alert({ type: 'error', message: '未选中任何元素' });
+        VsCode.alert({ type: 'error', message: '未选中任何元素' });
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
@@ -267,7 +267,7 @@ export const layout: TyActionGroup = {
     excute() {
       const ast = state.swap.ast;
       if (!ast) {
-        Output.alert({ type: 'error', message: '未选中任何元素' });
+        VsCode.alert({ type: 'error', message: '未选中任何元素' });
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;
@@ -303,7 +303,7 @@ export const layout: TyActionGroup = {
     excute() {
       const ast = state.swap.ast;
       if (!ast) {
-        Output.alert({ type: 'error', message: '未选中任何元素' });
+        VsCode.alert({ type: 'error', message: '未选中任何元素' });
         return;
       }
       const style = ast.style || ((ast as any).style = {}) as any;

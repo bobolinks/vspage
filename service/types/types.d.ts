@@ -113,6 +113,8 @@ declare interface TyAst {
   /**其它自定义子段 */
   [key: string]: any;
 }
+/** 语法节点路径，格式为{index0}.{index1}.... */
+declare type TyAstPath = string;
 /**模块依赖 */
 declare interface TyDependency {
   /**版本要求 */

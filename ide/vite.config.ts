@@ -10,9 +10,9 @@ export default defineConfig({
     }],
   },
   plugins: [vue()],
-  base: '/__wesim__/',
+  base: '/__ide__/',
   build: {
-    outDir: '../dist/__wesim__',
+    outDir: '../dist/__ide__',
     emptyOutDir: true,
     // only for debug
     minify: process.env.NODE_ENV === 'production',

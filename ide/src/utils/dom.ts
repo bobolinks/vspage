@@ -1,7 +1,6 @@
 import { TyAstRoot } from "./html";
 import Wxml, { TyEventValue } from './wxml';
 
-declare type TyAstPath = string;
 declare const exparser: any;
 
 export type TyAttrsMap = Record<string /* tag */, Record<string /* attr */, string /* value */>>;

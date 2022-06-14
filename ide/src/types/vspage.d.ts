@@ -1,29 +1,52 @@
 declare module 'vspage' {
   /** 环境配置 */
   type Env = {
-    base: string,
+    base: string;
     host: string;
     nonce: string;
+  }
+
+  type HtmlCode = string;
+  type CssCode = string;
+  type SourceCode = string;
+  /** 页面内容 */
+  interface PageData {
+    scoped: string;
+    wxml: HtmlCode;
+    wxss: CssCode;
+    wxxs: SourceCode;
+    json: PageConfig;
   }
 
   /** 编辑器服务接口 */
   interface VsPage {
     /** 初始化 */
     initialize(env: Env): void;
+    /** 更新app配置 */
+    syncAppConfig(appConfig: AppConfig): void;
     /** 设置当前页面 */
-    setPage(page: string): void;
+    setCurrentPage(path: TyAstPath, data: PageData): void;
+    /** 更新页面 */
+    updatePage(path: TyAstPath, data: Partial<PageData>): void;
+    /** 同步选中元素 */
+    select(target: TyAstPath | null): void;
   }
 
-  type AlertData = {
+  /** 消息 */
+  type MessageData = {
     type: 'debug' | 'info' | 'warning' | 'error';
     title?: string;
     message: string;
   };
 
   /** 服务反馈接口 */
-  interface Output {
+  interface VsCode {
     /** 告警 */
-    alert(data: string | AlertData): void;
+    alert(data: string | MessageData): void;
+    /** 同步样式补丁 */
+    patchStyle(target: TyAstPath, patch: StylePatch): void;
+    /** 同步选中元素 */
+    select(target: TyAstPath | null): void;
   }
 
   type StylePatch = Record<string, string | false>;

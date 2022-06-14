@@ -1,0 +1,64 @@
+{
+  "name": "vspage",
+  "description": "VsPage - Layout tool",
+  "version": "0.0.1",
+  "publisher": "vspage",
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:vide",
+    "onWebviewPanel:vide.editor"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bobolinks/vspage.git"
+  },
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vide",
+        "title": "vide",
+        "category": "vide"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "webpack --mode production",
+    "lint": "eslint . --ext .ts,.tsx",
+    "pre": "webpack --mode development",
+    "dev": "webpack --mode development --watch",
+    "build": "rm -f ../*.vsix ../dist/*.js.map && webpack --mode production && cd ../dist && vsce package && mv *.vsix ../",
+    "pack": "rm -f ../*.vsix && cd ../dist && vsce package && mv *.vsix ../"
+  },
+  "devDependencies": {
+    "@types/css": "^0.0.33",
+    "@types/html-parser": "^0.11.2",
+    "@types/md5": "^2.3.0",
+    "@types/node": "^14.14.31",
+    "@types/prettier": "^2.2.3",
+    "@types/vscode": "^1.50.0",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^8.17.0",
+    "single-line-log": "^1.1.2",
+    "ts-loader": "^8.0.18",
+    "vsce": "^2.9.1",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "css": "^3.0.0",
+    "html-parser": "^0.11.0",
+    "md5": "^2.3.0",
+    "typescript": "^4.7.3"
+  }
+}

@@ -39,12 +39,12 @@ expr.all('*', (req, res, next) => {
 function applyRoutingRules() {
   expr.use(bodyParser.urlencoded({ limit: '30mb', extended: false }));
   expr.use(bodyParser.json({ limit: '30mb' }));
-  expr.use('/plugin.html', (request, response) => response.redirect('/__wesim__/plugin.html'));
+  expr.use('/plugin.html', (request, response) => response.redirect('/__ide__/plugin.html'));
   // expr.use('/__wesim_index__', proxy(
   //   `http://localhost:${env.address.port}`,
   //   {
   //     proxyReqPathResolver(req) {
-  //       return '/__wesim__/index';
+  //       return '/__ide__/index';
   //     },
   //     userResHeaderDecorator(headers, userReq, userRes, proxyReq, proxyRes) {
   //       headers.location = '/__wesim_index__';
@@ -54,18 +54,18 @@ function applyRoutingRules() {
   // ));
 
   // if (env.debug) {
-  //   expr.use('/__wesim__', proxy(
+  //   expr.use('/__ide__', proxy(
   //     'http://localhost:3000',
   //     {
   //       proxyReqPathResolver(req) {
-  //         return `/__wesim__${url.parse(req.url).path}`;
+  //         return `/__ide__${url.parse(req.url).path}`;
   //       },
   //     },
   //   ));
   // } else {
-  //   const webPath = path.join(env.paths.bin, '__wesim__');
+  //   const webPath = path.join(env.paths.bin, '__ide__');
   //   logger.info(`Web root[${webPath}]`);
-  //   expr.use('/__wesim__', express.static(webPath));
+  //   expr.use('/__ide__', express.static(webPath));
   // }
 
   rs.init(expr);
