@@ -122,7 +122,7 @@ export class WebView {
     this.terminal.show(true);
 
     // init service
-    this.service = new Service(writeEmitter);
+    this.service = new Service(this.minirootPath, writeEmitter);
 
     // init vspage
     this.vspage = new VsPage(this.panel.webview, this.service);
@@ -203,22 +203,7 @@ export class WebView {
     if (!ext) {
       return;
     }
-    if (!/^wxml|json$/i.test(ext)) {
-      return;
-    }
-    /** is config file for vspage ? */
-    const relPath = utils.path.relative(this.projectPath, curPath);
-    if (relPath === vspageConfigFile) {
-      const vspageConfigPath = path.join(this.workspacePath, vspageConfigFile);
-      if (fs.existsSync(vspageConfigPath)) {
-        const config = JSON.parse(fs.readFileSync(vspageConfigPath, 'utf-8'));
-        if (config.projectRoot) {
-          this.projectPath = utils.path.compatible(path.resolve(this.workspacePath, config.projectRoot));
-        }
-        if (config.exclude) {
-          this.exclude = config.exclude as any;
-        }
-      }
+    if (!/^wxml$/i.test(ext)) {
       return;
     }
     /** not page selected */
@@ -231,16 +216,15 @@ export class WebView {
     if (relPagePath !== this.curPagePath) {
       return;
     }
-    const name = ext.toLocaleLowerCase().replace(/^\.[tj]s$/, 'wxxs') as 'wxml' | 'json';
     const src = e.document.getText();
-    if (this.curPage[name] === src) {
+    if (this.curPage.wxml === src) {
       return;
     }
     const data: Partial<PageData> = {
       scoped: md5(`/${relPagePath}`),
-      [name]: src,
+      wxml: src,
     };
-    this.curPage[name] = src;
+    this.curPage.wxml = src;
     this.vspage.updatePage(relPagePath, data);
   }
   private onDidSaveTextDocument(e: vscode.TextDocument) {
@@ -293,7 +277,7 @@ export class WebView {
         scoped: md5(`/${relPagePath}`),
         wxml: editor.document.getText(),
         // wxss: fs.readFileSync(`${pagePath}.wxss`, 'utf-8'),
-        json: JSON.parse(fs.readFileSync(`${pagePath}.json`, 'utf-8')) as any,
+        // json: JSON.parse(fs.readFileSync(`${pagePath}.json`, 'utf-8')) as any,
       };
       this.vspage.setCurrentPage(relPagePath, this.curPage);
       this.currentEditor = editor;
@@ -380,7 +364,7 @@ export class WebView {
   private reloadVsPageConfig() {
     const vspageConfigPath = path.join(this.workspacePath, vspageConfigFile);
     if (fs.existsSync(vspageConfigPath)) {
-      const config = JSON.parse(fs.readFileSync(vspageConfigPath, 'utf-8'));
+      const config = JSON.parse(fs.readFileSync(vspageConfigPath, 'utf-8')) as VsPageConfig;
       if (config.projectRoot) {
         this.projectPath = utils.path.compatible(path.resolve(this.workspacePath, config.projectRoot));
       }

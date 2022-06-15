@@ -100,7 +100,7 @@ export class TPage implements WxPageInstance {
   iframe: HTMLIFrameElement;
   path: string;
   scoped: string;
-  constructor(public url: string, config: Partial<PageData>) {
+  constructor(public url: string, config: PageConfig, data: Partial<PageData>) {
     const path = url.split('?')[0];;
     const id = path.replace(/[^0-9a-z-]/ig, '-');
     this.data = {};
@@ -109,7 +109,7 @@ export class TPage implements WxPageInstance {
     this.is = '';
     this.route = '';
     this.options = {};
-    this.config = config.json || {};
+    this.config = config;
     if (this.config.usingComponents) {
       formatUsingCompoents(this.config.usingComponents, path);
     }
@@ -150,15 +150,15 @@ export class TPage implements WxPageInstance {
         const props = o.properties || {};
         const data = o.data || (o.data = {});
         for (const [k, it] of Object.entries(props)) {
-          const { default: vv } = it as any;
-          if (vv !== undefined) {
-            data[k] = vv;
+          const { value } = it as any;
+          if (value !== undefined) {
+            data[k] = value;
           }
         }
         return (window as any).Page(o);
       };
-      if (config.wxml) {
-        (this.iframe.contentWindow as any).wxml = config.wxml;
+      if (data.wxml) {
+        (this.iframe.contentWindow as any).wxml = data.wxml;
       }
       const t = Cache.findStamp(path, files);
       Sys.mountModule(`module-page-${id}`, path, t, {}, d);

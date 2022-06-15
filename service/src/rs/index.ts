@@ -24,12 +24,8 @@ function parseHttpDate(date: string) {
 
 export default {
   init(expr: Express) {
-    const config = JSON.parse(fs.readFileSync(path.join(env.paths.root, 'project.config.json'), 'utf-8'));
-    if (config.miniprogramRoot) {
-      env.paths.miniroot = path.join(env.paths.root, config.miniprogramRoot);
-    }
-    fs.watch(env.paths.miniroot, { persistent: true, recursive: true }, (event, filePath) => {
-      const relPath = path.join(env.paths.miniroot, filePath);
+    fs.watch(env.paths.minisrc, { persistent: true, recursive: true }, (event, filePath) => {
+      const relPath = path.join(env.paths.minisrc, filePath);
       const isDeleted = (event !== 'change' && !fs.existsSync(relPath));
       Editor.fileChanged(filePath, isDeleted ? 0 : fs.statSync(relPath).mtimeMs);
     });
@@ -45,7 +41,7 @@ export default {
       } else {
         query = '';
       }
-      let filePath = path.resolve(env.paths.miniroot, filePathRel);
+      let filePath = path.resolve(env.paths.minisrc, filePathRel);
       let exists = fs.existsSync(filePath);
       if (exists && fs.statSync(filePath).isDirectory()) {
         filePathRel += `${filePathRel}/index`;
@@ -63,7 +59,7 @@ export default {
         }
         if (!exists) {
           if (/^\/node_modules\//.test(filePathRel)) {
-            const newPath = lookupModule(env.paths.miniroot, filePathRel.substring(14));
+            const newPath = lookupModule(env.paths.minisrc, filePathRel.substring(14));
             if (newPath) {
               filePathRel = newPath;
               exists = true;
@@ -88,7 +84,7 @@ export default {
         if (!exists) {
           return next();
         } else {
-          filePath = path.resolve(env.paths.miniroot, filePathRel);
+          filePath = path.resolve(env.paths.minisrc, filePathRel);
         }
       }
 
@@ -112,9 +108,9 @@ export default {
         src = fs.readFileSync(filePath, 'utf-8');
         mimeType = 'application/javascript';
         if (moduleType === 'wx-component') {
-          src = xs(env.paths.miniroot, filePathRel, src, importType, `window.__FILE__='${filePathRel}';`);
+          src = xs(env.paths.minisrc, filePathRel, src, importType, `window.__FILE__='${filePathRel}';`);
         } else {
-          src = xs(env.paths.miniroot, filePathRel, src, importType);
+          src = xs(env.paths.minisrc, filePathRel, src, importType);
         }
       } else if (/\.(css|wxss|less|sass|scss)$/.test(filePath)) {
         if (secFetchDest === 'script' || importType === 'module') {
@@ -133,11 +129,11 @@ export default {
             `;
           } else {
             if (/\.less$/i.test(filePathRel)) {
-              src = await less(filePath, env.paths.miniroot, scoped);
+              src = await less(filePath, env.paths.minisrc, scoped);
             } else if (/\.sass$/i.test(filePathRel)) {
-              src = await sass(filePath, env.paths.miniroot, scoped);
+              src = await sass(filePath, env.paths.minisrc, scoped);
             } else if (/\.scss$/i.test(filePathRel)) {
-              src = await sass(filePath, env.paths.miniroot, scoped);
+              src = await sass(filePath, env.paths.minisrc, scoped);
             } else {
               src = fs.readFileSync(filePath, 'utf-8');
             }
@@ -149,11 +145,11 @@ export default {
           }
         } else {
           if (/\.less$/i.test(filePathRel)) {
-            src = await less(filePath, env.paths.miniroot, scoped);
+            src = await less(filePath, env.paths.minisrc, scoped);
           } else if (/\.sass$/i.test(filePathRel)) {
-            src = await sass(filePath, env.paths.miniroot, scoped);
+            src = await sass(filePath, env.paths.minisrc, scoped);
           } else if (/\.scss$/i.test(filePathRel)) {
-            src = await sass(filePath, env.paths.miniroot, scoped);
+            src = await sass(filePath, env.paths.minisrc, scoped);
           } else {
             src = fs.readFileSync(filePath, 'utf-8');
           }
@@ -200,6 +196,6 @@ export default {
       }
       readStream.pipe(response);
     });
-    expr.use('/', express.static(env.paths.miniroot));
+    expr.use('/', express.static(env.paths.minisrc));
   },
 };

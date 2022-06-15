@@ -17,12 +17,12 @@ wx.navigateTo = async function (options: NavigateToOption) {
   }
   const url = Path.relative(store.currPage || '/', options.url);
   const path = url.split('?')[0];
-  const pageOptions = options.json || await Sys.import(`${path}.json?import=module`);
+  const pageOptions = await Sys.import(`${path}.json?import=module`);
   if (pageOptions.usingComponents) {
     formatUsingCompoents(pageOptions.usingComponents, path);
     await loadComponents(pageOptions.usingComponents);
   }
-  const newPage = new TPage(url, { json: pageOptions, wxml: options.wxml, });
+  const newPage = new TPage(url, pageOptions, { wxml: options.wxml, });
   store.pages.push(newPage);
   store.currPage = url;
   store.page = pageOptions;

@@ -16,9 +16,9 @@ if (process.argv.length > 2) {
 }
 
 export const argsAnno: Record<string, ArgAnnotation> = {
-  dir: {
-    alias: 'd',
-    description: '指定小程序项目根路径',
+  root: {
+    alias: 'w',
+    description: '指定工作区根目录',
   },
   port: {
     alias: 'p',
@@ -43,15 +43,15 @@ export interface Environment {
   paths: {
     /** where the server app is located after 'npm install -g mind-test' */
     bin: string,
-    /** project root path */
+    /** workspace root path */
     root: string,
-    /** miniapp src root path */
+    /** miniapp project root path */
     miniroot: string;
+    /** miniapp src root path */
+    minisrc: string;
     /** temp path */
     temp: string;
   },
-  /** project uuid */
-  uuid: string;
   /** listening address */
   address: {
     host: string;
@@ -64,19 +64,17 @@ export interface Environment {
   cmd: string,
 }
 
-const uuid = md5(args.dir || process.cwd());
-
 export const env: Environment = {
   debug: process.env.NODE_ENV !== 'production',
   version,
   platform: os.platform as any,
   paths: {
     bin: args.bin || process.cwd() || __dirname,
-    root: args.dir || process.cwd(),
-    miniroot: args.dir || process.cwd(),
-    temp: path.join(os.tmpdir(), uuid),
+    root: args.root || process.cwd(),
+    miniroot: args.root || process.cwd(),
+    minisrc: args.root || process.cwd(),
+    temp: path.join(args.root || process.cwd(), '.vspage/tmp'),
   },
-  uuid,
   address: {
     host: '',
     port: 0,
@@ -85,6 +83,30 @@ export const env: Environment = {
   cmd,
   args,
 };
+
+const vspagePath = path.resolve(args.root, '.vspage');
+if (!fs.existsSync(vspagePath)) {
+  fs.mkdirSync(vspagePath);
+}
+
+const vspageConfigFile = path.resolve(vspagePath, 'config.json');
+if (fs.existsSync(vspageConfigFile)) {
+  const cfg = JSON.parse(fs.readFileSync(vspageConfigFile, 'utf8'));
+  if (cfg.projectRoot) {
+    env.paths.miniroot = path.resolve(env.paths.root, cfg.projectRoot);
+    env.paths.temp = path.resolve(env.paths.root, '.vspage/tmp');
+  }
+}
+
+const miniConfigFile = path.join(env.paths.miniroot, 'project.config.json');
+if (!fs.existsSync(miniConfigFile)) {
+  throw new Error(`${miniConfigFile} not found`);
+}
+
+const miniConfig = JSON.parse(fs.readFileSync(miniConfigFile, 'utf-8'));
+if (miniConfig.miniprogramRoot) {
+  env.paths.minisrc = path.join(env.paths.miniroot, miniConfig.miniprogramRoot);
+}
 
 if (!fs.existsSync(env.paths.temp)) {
   fs.mkdirSync(env.paths.temp);

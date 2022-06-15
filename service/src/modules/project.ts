@@ -10,7 +10,7 @@ const cached = {
 
 export const module = {
   config() {
-    const file = path.join(env.paths.root, 'project.config.json');
+    const file = path.join(env.paths.miniroot, 'project.config.json');
     const mTimeMs = fs.statSync(file).mtimeMs;
     if (mTimeMs !== cached.mTimeMs) {
       cached.mTimeMs = mTimeMs;

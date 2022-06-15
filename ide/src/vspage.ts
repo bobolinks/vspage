@@ -19,16 +19,12 @@ export const VsPage = new class implements IVsPage {
     });
   }
   updatePage(path: string, data: Partial<PageData>): void {
-    if (!store.pages.length || (!data.wxml && !data.json)) {
+    if (!store.pages.length || !data.wxml) {
       return;
     }
     const page = store.pages[store.pages.length - 1];
     if (data.wxml) {
       (page.iframe.contentWindow as any).wxml = data.wxml;
-    }
-    if (data.json) {
-      page.config = data.json;
-      store.page = data.json;
     }
     renderPage(page);
   }
@@ -76,16 +72,16 @@ export const VsCode = new class implements IVsCode {
       }
     });
   }
-  patchStyle(target: string, patch: StylePatch): void {
+  patchStyle(path: TyPath, target: string, patch: StylePatch): void {
     this.request({
       method: 'patchStyle',
       params: [target, patch],
     });
   }
-  select(target: string | null): void {
+  select(path: TyPath, target: string | null): void {
     this.request({
       method: 'select',
-      params: [target],
+      params: [path, target],
     });
   }
   alert(data: string | MessageData): void {
@@ -148,7 +144,7 @@ export const Editor = new class implements IEditor {
       store.swap.ast = readonly(null as any);
       store.swap.element = readonly(null as any);
     }
-    VsCode.select(element?.getAttribute('data-attr-path') as string);
+    VsCode.select(store.currPage, element?.getAttribute('data-attr-path') as string);
   }
   patchStyle(patch: StylePatch): boolean {
     if (!store.swap.ast) {
@@ -178,7 +174,7 @@ export const Editor = new class implements IEditor {
       }
     }
     if (changed) {
-      VsCode.patchStyle(element.getAttribute('data-attr-path') as string, patch);
+      VsCode.patchStyle(store.currPage, element.getAttribute('data-attr-path') as string, patch);
     }
     return changed;
   }

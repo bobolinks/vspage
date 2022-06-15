@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import css from './css';
 import html from './html';
+import wxml from './wxml';
 
 export default {
   jsonFromFile(file: string) {
@@ -15,6 +16,7 @@ export default {
   },
   css,
   html,
+  wxml,
   path: {
     compatible(fp: string) {
       return fp.replace(/^[\\/]([a-z]+:)/i, '$1').replace(/\\/g, '/');

@@ -76,11 +76,15 @@ export default {
     }
     return obj;
   },
-  astToInlinestyle(ast: TyMap<any>): string {
+  astToInlinestyle(style: TyMap<any>): string {
     let src = '';
-    for (const prop in ast) {
-      const propVal = ast[prop];
-      src += `${prop}: ${propVal}; `;
+    for (const prop in style) {
+      const propVal = style[prop];
+      if (prop.startsWith(':')) {
+        src += `${prop.substring(1)}: {{${propVal}}}; `;
+      } else {
+        src += `${prop}: ${propVal}; `;
+      }
     }
     return src.replace(/; $/, ';');
   },

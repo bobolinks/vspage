@@ -138,7 +138,7 @@ export class TComponentClass {
     for (const [key, item] of Object.entries(props)) {
       const camelName = key.replace(/-([a-zA-Z])/g, $1 => $1.substring(1).toLocaleUpperCase());
       const minusName = key.replace(/([a-z][A-Z])/g, $1 => `${$1[0]}-${$1[1].toLocaleLowerCase()}`);
-      const value = element.getAttribute(camelName) || element.getAttribute(minusName) || (item as any).default;
+      const value = element.getAttribute(camelName) || element.getAttribute(minusName) || (item as any).value;
       if (value !== null && value !== undefined) {
         instance.data[key] = value;
       }

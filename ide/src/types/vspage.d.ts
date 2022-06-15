@@ -4,8 +4,6 @@ declare module 'vspage' {
     scoped: string;
     /** wxml code */
     wxml: string;
-    /** page options */
-    json: PageConfig;
   }
 
   /** 编辑器服务接口 */
@@ -13,9 +11,9 @@ declare module 'vspage' {
     /** 更新app配置 */
     syncAppConfig(appConfig: AppConfig): void;
     /** 设置当前页面 */
-    setCurrentPage(path: TyAstPath, data: PageData): void;
+    setCurrentPage(path: TyPath, data: PageData): void;
     /** 更新页面 */
-    updatePage(path: TyAstPath, data: Partial<PageData>): void;
+    updatePage(path: TyPath, data: Partial<PageData>): void;
     /** 同步选中元素 */
     select(target: TyAstPath | null): void;
   }
@@ -32,9 +30,9 @@ declare module 'vspage' {
     /** 告警 */
     alert(data: string | MessageData): void;
     /** 同步样式补丁 */
-    patchStyle(target: TyAstPath, patch: StylePatch): void;
+    patchStyle(path: TyPath, target: TyAstPath, patch: StylePatch): void;
     /** 同步选中元素 */
-    select(target: TyAstPath | null): void;
+    select(path: TyPath, target: TyAstPath | null): void;
   }
 
   type StylePatch = Record<string, string | false>;

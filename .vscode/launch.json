@@ -21,7 +21,7 @@
       "program": "${workspaceFolder}/service/node_modules/ts-node/dist/bin.js",
       "args": [
         "${workspaceFolder}/service/src/index.ts",
-        "--dir=/Users/amos/Projects/dlab/app",
+        "--root=/Users/amos/Projects/dlab",
         "--port=4040",
         "--open=true"
       ],

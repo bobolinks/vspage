@@ -431,6 +431,19 @@ export default {
     return ts(ast as TyAst, depth).replace(/^\n+/, '');
   },
 
+  query(ast: TyAstRoot, astPath: TyAstPath): TyAst | undefined {
+    const indices = astPath.split('.').map(e => parseInt(e));
+    let node = ast as any as TyAst;
+    for (const index of indices) {
+      if (!node.children) {
+        return undefined;
+      }
+      node = node.children[index] as any;
+      if (!node) return undefined;
+    }
+    return node;
+  },
+
   cssToAst(cssCode: string): TyCssAst {
     return css.parse(cssCode);
   },
