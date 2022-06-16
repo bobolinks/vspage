@@ -33,7 +33,7 @@ if (!(window as any).$) {
   ((window as any)).$ = (selector: string, doc?: Document) => (doc || document).querySelector(selector);
 }
 
-document.title = 'wesim';
+document.title = 'vspage';
 
 // const app = createApp(appVue);
 const app = createApp({

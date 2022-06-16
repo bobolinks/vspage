@@ -1,0 +1,13 @@
+.container {
+  height: 100%;
+  font-size: 24rpx;
+}
+
+.list {
+  padding: 0;
+  background-color: white;
+}
+
+.item {
+  border-bottom: 1px solid #f2f2f2;
+}

@@ -5,6 +5,93 @@ import { MessageData, StylePatch, VsCode as VsCodeService } from 'vspage';
 import utils from './utils';
 import { TyAstRoot } from './utils/html';
 
+const wxmlEmitter = {
+  textContent(ast: TyAstText) {
+    return utils.wxml.stringifyToText(ast.text);
+  },
+  stringify: (ast: TyAst) => {
+    let src = '';
+    if (ast.logic) {
+      const logics: Array<TyAstLogic> = Array.isArray(ast.logic) ? ast.logic : [ast.logic];
+      for (const logic of logics) {
+        if (logic.instruction === 'wx:for') {
+          const forIndex = logic.data.index || 'index';
+          const forItem = logic.data.it || 'item';
+          src += ` wx:for=${utils.wxml.toAttrString(`{{${logic.data.entity}}}`)} wx:for-item='${forItem}' wx:for-index='${forIndex}'`;
+          if (logic.data.key) {
+            src += ` wx:key=${utils.wxml.toAttrString(logic.data.key)}`;
+          }
+        } else if (logic.data.entity) {
+          src += ` ${logic.instruction}=${utils.wxml.toAttrString(`{{${logic.data.entity}}}`)}`;
+        } else {
+          src += ` ${logic.instruction}`;
+        }
+      }
+    }
+
+    for (const key in ast.events) {
+      const value = ast.events[key];
+      src += ` bind:${key}=${utils.wxml.toAttrString(value)}`;
+    }
+
+    for (const [key, value] of Object.entries(ast.attrs || {} as any as TyMap<any>)) {
+      const keyWithoutColon = key[0] === ':' ? key.substring(1) : key;
+      if (key[0] === ':') {
+        src += ` ${keyWithoutColon}=${utils.wxml.toAttrString(value)}`;
+        continue;
+      }
+      const valueType = typeof value;
+      if (valueType === 'string') {
+        if (value === null) {
+          src += ` ${keyWithoutColon}`;
+        } else {
+          src += ` ${keyWithoutColon}=${utils.wxml.toAttrString(value)}`;
+        }
+      } else if (valueType === 'object' && Array.isArray(value)) {
+        src += ` ${keyWithoutColon}=${utils.wxml.toAttrString(value.join(' '))}`;
+      } else if (valueType === 'boolean') {
+        if (value) {
+          src += ` ${keyWithoutColon}`;
+        }
+      } else if (value === null) {
+        src += ` ${keyWithoutColon}`;
+      } else {
+        src += ` ${keyWithoutColon}=${utils.wxml.toAttrString(value)}`;
+      }
+    }
+
+    // process class list
+    const classes: any = typeof ast.classes === 'string' ? [ast.classes] : ast.classes;
+    if (classes?.length) {
+      let hasBound = false;
+      for (const iterator of classes) {
+        if (Object.hasOwnProperty.call(iterator, '$')) {
+          hasBound = true;
+        }
+      }
+      if (hasBound) {
+        const nameList = [];
+        for (const iterator of classes) {
+          if (Object.hasOwnProperty.call(iterator, '$')) {
+            nameList.push(`{{${iterator.$}}}`);
+          } else {
+            nameList.push(iterator);
+          }
+        }
+        src += ` class=${utils.wxml.toAttrString(nameList.join(' ').replace(/\s\s+/g, ' '))}`;
+      } else {
+        src += ` class=${utils.wxml.toAttrString(classes.join(' ').replace(/\s\s+/g, ' '))}`;
+      }
+    }
+
+    const style = Object.assign((ast as any).Gstyle || {}, ast.style || {});
+    if (Object.keys(style).length) {
+      src += ` style='${utils.css.astToInlinestyle(style)}'`;
+    }
+    return src;
+  },
+};
+
 export function transpileWxml(src: string): TyAstRoot {
   const root = utils.html.htmlToAstEx(src, undefined, {
     parseText(ast: TyAstText, text: string) {
@@ -64,7 +151,7 @@ export class Service implements VsCodeService, vscode.Disposable {
     this.terminal.fire('\x1b[0m\r\n');
   }
   patchStyle(pagePath: TyPath, target: string, patch: StylePatch): void {
-    const absFilePath = path.join(this.miniroot, pagePath);
+    const absFilePath = path.join(this.miniroot, `${pagePath}.wxml`);
     const editor = vscode.window.visibleTextEditors.find(e => utils.path.compatible(e.document.uri.path) === absFilePath);
     const src = editor ? editor.document.getText() : fs.readFileSync(absFilePath, 'utf8');
     const ast = transpileWxml(src);
@@ -93,7 +180,7 @@ export class Service implements VsCodeService, vscode.Disposable {
     if (!changed) {
       return;
     }
-    const newSrc = utils.html.astToHtml(ast);
+    const newSrc = utils.html.astToHtml(ast, 0, wxmlEmitter);
     if (editor) {
       editor.edit((edit: vscode.TextEditorEdit) => {
         const firstLine = editor.document.lineAt(0);

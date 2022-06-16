@@ -1,0 +1,58 @@
+.topbar {
+  flex: 0 0 0%;
+  width: 100vw;
+  font-size: 11px;
+  align-items: stretch;
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  background-color: #D04453;
+  color: white;
+  padding-top: var(--status-bar-height);
+  min-height: calc(var(--status-bar-height) + var(--navi-bar-height));
+  max-height: calc(var(--status-bar-height) + var(--navi-bar-height));
+  position: relative;
+}
+
+.sysbar {
+  margin-top: -2px;
+  min-height: 30px;
+  max-height: 30px;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.search {
+  margin: 0 5px;
+  padding: 0 8px;
+  background-color: white;
+  border: none;
+  border-radius: 3rem;
+  min-height: 30px;
+}
+
+.search input {
+  border: none !important;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 30px;
+  margin: 2px;
+  vertical-align: middle;
+  border-radius: none !important;
+  background-color: transparent !important;
+  color: #555;
+}
+
+.topbar .title {
+  flex: 1 1 auto;
+  font-size: 20px;
+  margin-left: 10px;
+  font-weight: 500;
+}
+
+.topbar i {
+  font-size: 20px;
+}

@@ -1,0 +1,35 @@
+{
+  "name": "vspage",
+  "description": "VsPage - Layout tool for vscode",
+  "version": "0.0.1",
+  "publisher": "vspage",
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:vide",
+    "onWebviewPanel:vide.editor"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vide",
+        "title": "vide",
+        "category": "vide"
+      }
+    ]
+  },
+  "dependencies": {
+    "fsevents": "^2.3.2",
+    "typescript": "^4.7.3",
+    "ws": "^8.8.0"
+  }
+}

@@ -84,7 +84,7 @@ const state = {
       appId: "",
     },
   } as SystemInfo,
-  theme: 'dark' as 'dark' | 'light',
+  theme: localStorage.getItem('theme') || 'dark' as 'dark' | 'light',
   swap: {
     element: readonly(null as any as HTMLElement),
     ast: null as any as TyAst,
@@ -103,6 +103,15 @@ export const store = createStore({
 watch(store.state.sysinfo, (v) => {
   localStorage.setItem('sysinfo', JSON.stringify(v));
 });
+
+watch(() => store.state.theme, (v) => {
+  localStorage.setItem('theme', v);
+});
+
+if (state.theme !== 'dark') {
+  document.body.classList.toggle('theme-light');
+  document.body.classList.toggle('theme-dark');
+}
 
 export const files: Record<string, FileCache> = {};
 export type Store = typeof state;

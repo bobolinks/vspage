@@ -1,0 +1,19 @@
+<view class='page theme1' style='align-items: stretch; display: flex; flex-direction: column; flex-wrap: nowrap; '>
+  <Summary props='{{item}}'></Summary>
+  <EChart bind:action='onClick' id='EChart' canvasid='canvasId' options='{{ecData}}' class='chart'></EChart>
+  <view class='container prols'>
+    <view class='item' wx:for='{{items}}' wx:for-item='item' wx:for-index='index' wx:key='index' >
+      <view class='left'>
+        <label class='gross'>{{item.value}}%</label>
+        <label wx:if='{{item.rank}}' class='rank'>{{item.rank}}</label>
+      </view>
+      <view class='right'>
+        <label class='title'>{{item.name}}</label>
+        <view class="intro" style='display: flex; flex-direction: row; justify-content: space-between; '>
+          <label class='cap'>营业额 ~ {{item.income}}亿</label>
+          <label class='sample'>{{item.gross}}% ~ 毛利率</label>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

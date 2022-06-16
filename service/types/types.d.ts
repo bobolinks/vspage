@@ -110,8 +110,6 @@ declare interface TyAst {
   classes?: string | TyTextExp | Array<string | TyTextExp>;
   /**节点逻辑 */
   logic?: TyAstLogic | Array<TyAstLogic>;
-  /**其它自定义子段 */
-  [key: string]: any;
 }
 /** 语法节点路径，格式为{index0}.{index1}.... */
 declare type TyAstPath = string;

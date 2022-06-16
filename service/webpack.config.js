@@ -10,9 +10,15 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, '../dist'),
-    filename: '[name].js',
+    filename: 'service.js',
+    libraryTarget: 'commonjs2',
   },
   mode: "production", /**development */
+  externals: {
+    typescript: 'commonjs typescript',
+    ws: 'commonjs ws',
+    fsevents: 'commonjs fsevents'
+  },
   plugins: [
     new webpack.ProgressPlugin({
       entries: true,
@@ -27,14 +33,14 @@ module.exports = {
   ],
   module: {
     rules: [
-      { 
-        test: /\.ts[x]?$/, 
-        loader: "ts-loader" 
+      {
+        test: /\.ts[x]?$/,
+        loader: "ts-loader"
       },
-      { 
-        enforce: "pre", 
-        test: /\.ts[x]$/, 
-        loader: "source-map-loader" 
+      {
+        enforce: "pre",
+        test: /\.ts[x]$/,
+        loader: "source-map-loader"
       },
       {
         test: /\.(js|jsx)$/,

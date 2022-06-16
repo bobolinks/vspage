@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "topbar": "../../components/topbar/index",
+    "tabs": "../../components/tabs/index",
+    "table": "../../components/table/index"
+  },
+  "navigationStyle": "custom",
+  "navigationBarTextStyle": "white",
+  "disableScroll": true
+}

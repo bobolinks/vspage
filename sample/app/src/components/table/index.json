@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "Summary": "../summary/index",
+    "Item": "../item/index"
+  },
+  "addGlobalClass": true
+}

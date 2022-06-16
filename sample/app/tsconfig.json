@@ -1,0 +1,32 @@
+{
+  "files": [
+    "./src/types/index.d.ts"
+  ],
+  "compilerOptions": {
+    "target": "esnext",
+    // "allowJs": true,
+    "alwaysStrict": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "removeComments": true,
+    "moduleResolution": "node",
+    "typeRoots": [
+      "./node_modules/@types/",
+      "./node_modules/miniprogram-api-typings/",
+    ],
+    "lib": [
+      "esnext",
+    ],
+    "resolveJsonModule": true
+  },
+  "include": [
+    "./src/*.ts",
+    "./src/**/*.ts",
+  ],
+  "exclude": [
+    "node_modules",
+    "miniprogram_npm"
+  ]
+}

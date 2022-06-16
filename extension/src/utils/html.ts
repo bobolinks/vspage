@@ -15,6 +15,18 @@ export interface TyAstRoot {
   children: Array<TyAst | TyAstText | TyAstMacro | TyAstComment>;
 }
 
+interface TyAstEx extends TyAst {
+  parent?: TyAst;
+  Gstyle?: Record<string, any>;
+  leadingText?: string;
+  endingText?: string;
+  selfClose?: boolean;
+  // for TyAstText
+  text?: string;
+  // for TyAstComment
+  comment?: string;
+}
+
 export type TyParseOptions = {
   /** keep css var */
   keepVar?: boolean,
@@ -93,7 +105,7 @@ const emitterHtml: HtmlEmitter = {
         src += ` ${key}=${tool.toAttrString(v)}`;
       }
     }
-    const style = Object.assign(ast.Gstyle || {}, ast.style || {});
+    const style = Object.assign((ast as TyAstEx).Gstyle || {}, ast.style || {});
     if (Object.keys(style).length) {
       src += ` style='${cssUtil.astToInlinestyle(style)}'`;
     }
@@ -210,7 +222,7 @@ export default {
         }
       }
     }
-    return grpElements.map(e => e.node);
+    return grpElements.map((e: any) => e.node);
   },
 
   getCssPropertyValue(ast: TyCssAst, code: string, cssVars?: TyMap<any>) {
@@ -251,7 +263,7 @@ export default {
     function Code(text: string, parent = undefined as any): TyAstText {
       return { text, parent } as unknown as TyAstText;
     }
-    function Element(tag: string, parent = undefined as any): TyAst {
+    function Element(tag: string, parent = undefined as any): TyAstEx {
       return { tag, attrs: {}, style: {}, children: [] as Array<TyAst>, parent };
     }
     const cssVars = {};
@@ -389,7 +401,7 @@ export default {
   },
 
   astToHtml(ast: TyAstRoot | TyAst, depth = 0, emitter = emitterHtml) {
-    const ts = (n: TyAst, depth: number) => {
+    const ts = (n: TyAstEx, depth: number) => {
       if (n.text) {
         return (n.leadingText || '') + emitter.textContent(n as any);
       } if (n.comment) {
@@ -397,7 +409,7 @@ export default {
       } if (!n.tag) {
         let src = '';
         for (const child of n.children || []) {
-          src += ts(child as TyAst, depth + 1);
+          src += ts(child as TyAstEx, depth + 1);
         }
         return src;
       }
@@ -418,7 +430,7 @@ export default {
       let hasTag = false;
       for (const child of n.children || []) {
         if ((child as any).tag) hasTag = true;
-        src += ts(child as TyAst, depth + 1);
+        src += ts(child as TyAstEx, depth + 1);
       }
       if (n.hasOwnProperty('endingText')) {
         src += n.endingText;
@@ -428,7 +440,7 @@ export default {
       src += `</${n.tag}>`;
       return src;
     };
-    return ts(ast as TyAst, depth).replace(/^\n+/, '');
+    return ts(ast as TyAstEx, depth).replace(/^\n+/, '');
   },
 
   query(ast: TyAstRoot, astPath: TyAstPath): TyAst | undefined {

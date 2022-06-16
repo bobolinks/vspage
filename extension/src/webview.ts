@@ -139,13 +139,13 @@ export class WebView {
     const { webview } = this.panel;
 
     this.panel.iconPath = {
-      light: vscode.Uri.parse(this.context.asAbsolutePath(path.join('ide', 'logo.svg'))),
-      dark: vscode.Uri.parse(this.context.asAbsolutePath(path.join('ide', 'logo.svg'))),
+      light: vscode.Uri.parse(this.context.asAbsolutePath(path.join('__ide__', 'logo.svg'))),
+      dark: vscode.Uri.parse(this.context.asAbsolutePath(path.join('__ide__', 'logo.svg'))),
     };
     this.panel.title = 'Vide';
 
     // todo:
-    const host = `http://localhost:3000`;
+    const host = `http://localhost:4040`;
 
     webview.html = `<!DOCTYPE html>
       <html lang="en">
@@ -189,6 +189,7 @@ export class WebView {
   async setupEvents() {
     vscode.workspace.onDidChangeTextDocument(this.onDidChangeTextDocument.bind(this), null, this.disposables);
     vscode.workspace.onDidSaveTextDocument(this.onDidSaveTextDocument.bind(this), null, this.disposables);
+    vscode.workspace.onDidCloseTextDocument(this.onDidCloseTextDocument.bind(this), null, this.disposables);
     vscode.window.onDidChangeActiveTextEditor(this.onDidChangeActiveTextEditor.bind(this), null, this.disposables);
     vscode.window.onDidChangeTextEditorSelection(this.onDidChangeTextEditorSelection.bind(this), null, this.disposables);
     this.panel.webview.onDidReceiveMessage(this.vspage.onDidReceiveMessage.bind(this.vspage), null, this.disposables);
@@ -251,9 +252,16 @@ export class WebView {
       }
     }
   }
+  private onDidCloseTextDocument(e: vscode.TextDocument) {
+    const curPath = utils.path.compatible(e.uri.path);
+    const relPagePath = utils.path.relative(this.minirootPath, curPath).replace(/\.\w+$/, '');
+    /** page chaned? */
+    if (relPagePath === this.curPagePath) {
+      this.currentEditor = undefined;
+    }
+  }
   private onDidChangeActiveTextEditor(editor: vscode.TextEditor | undefined) {
     if (!editor) {
-      this.currentEditor = undefined;
       return;
     }
 

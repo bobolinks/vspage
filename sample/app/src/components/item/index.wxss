@@ -1,0 +1,55 @@
+.item {
+  position: relative;
+  border-top: 1px solid #f2f2f2;
+  padding: 8rpx 20rpx;
+  display: flex;
+  flex-direction: row;
+  justify-items: stretch;
+  margin: 8rpx 0;
+  width: 100%;
+  height: 120rpx;
+}
+
+.item .left {
+  width: 160rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.item .left .gross {
+  font-size: 32rpx;
+  color: #ff9900;
+}
+
+.item .left .rank {
+  position: absolute;
+  bottom: 10rpx;
+  background-color: #f2f2f2;
+  border-radius: 10rpx;
+  width: 100rpx;
+  font-size: 20rpx;
+  padding: 0 8rpx;
+  text-align: center;
+  color: #999;
+}
+
+.item .right {
+  flex: 1 1 auto;
+  padding-top: 30rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.item .title {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.right .intro {
+  font-size: 20rpx;
+  color: #999;
+}

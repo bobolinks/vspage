@@ -1,0 +1,6 @@
+<view class='tabs'>
+  <view wx:for="{{items}}" wx:key="index" bind:tap='onGoto' class='item' data-name='{{index}}' data-selected='{{current === index}}' style='align-items: center; display: flex; flex-direction: column; '>
+    <i class='{{item.icon}}'></i>
+    <label>{{item.label}}</label>
+  </view>
+</view>

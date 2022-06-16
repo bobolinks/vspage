@@ -20,10 +20,6 @@ export const argsAnno: Record<string, ArgAnnotation> = {
     alias: 'w',
     description: '指定工作区根目录',
   },
-  port: {
-    alias: 'p',
-    description: '指定服务器端口，默认为随机端口',
-  },
   open: {
     alias: 'o',
     description: '是否同时打开浏览器',
@@ -56,7 +52,6 @@ export interface Environment {
   address: {
     host: string;
     port: number;
-    url: string;
   };
   /** args passed from cmd line */
   args: Record<string, number | boolean | string>,
@@ -78,7 +73,6 @@ export const env: Environment = {
   address: {
     host: '',
     port: 0,
-    url: '',
   },
   cmd,
   args,

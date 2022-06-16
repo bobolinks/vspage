@@ -61,6 +61,28 @@ export default {
     const str = this.stringifyToText(value);
     return this.escapeAttr(str);
   },
+  toAttrString(str: string): string {
+    if (typeof str !== 'string') return `'${str}'`;
+    const noSingle = !/'/.test(str);
+    const noDouble = !/"/.test(str);
+    if (noSingle && noDouble) {
+      return `'${str}'`;
+    } if (noDouble) {
+      return `"${str}"`;
+    }
+    return `'${str.replace(/'/g, '\\')}'`;
+  },
+  toAttrStringWxmlExpr(str: string): string {
+    if (typeof str !== 'string') return `'{{${str}}}'`;
+    const noSingle = !/'/.test(str);
+    const noDouble = !/"/.test(str);
+    if (noSingle && noDouble) {
+      return `'{{${str}}}'`;
+    } if (noDouble) {
+      return `"{{${str}}}"`;
+    }
+    return `'{{${str.replace(/'/g, '\\')}}}'`;
+  },
   escapeAttr(str: string) {
     str = str.replace(/\n/g, '\\n');
     const noSingle = !/'/.test(str);

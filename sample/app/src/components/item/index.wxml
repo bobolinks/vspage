@@ -1,0 +1,13 @@
+<view class='item'>
+  <view class='left'>
+    <label class='gross'>{{props.gross}}%</label>
+    <label wx:if='{{props.rank}}' class='rank'>{{props.rank}}</label>
+  </view>
+  <view class='right'>
+    <label class='title'>{{props.name}}</label>
+    <view class="intro" style='display: flex; flex-direction: row; justify-content: space-between; '>
+      <label class='cap'>营业额：{{props.cap}}亿</label>
+      <label class='sample'>{{props.sample}}个：样本</label>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,8 @@
+{
+  "projectRoot": "app",
+  "exclude": [
+    "test/*.ts",
+    "tools/*.ts",
+    "server/"
+  ]
+}

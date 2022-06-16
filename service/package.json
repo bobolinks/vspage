@@ -1,11 +1,12 @@
 {
-  "name": "wesim",
+  "name": "vsps",
   "version": "0.0.1",
-  "description": "service for wesim",
+  "description": "service for vspage",
   "author": "bobolinks",
   "license": "MIT",
   "main": "index.js",
   "scripts": {
+    "pre": "webpack --mode development",
     "build": "webpack"
   },
   "dependencies": {

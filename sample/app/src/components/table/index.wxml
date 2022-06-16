@@ -1,0 +1,10 @@
+<view class='container' style='align-items: stretch; display: flex; flex-direction: column; flex-wrap: wrap; justify-content: center; '>
+  <Summary props='{{sum}}'></Summary>
+  <view wx:if='{{items.length}}' class='list' style='flex: 1 1 auto; '>
+    <Item wx:for='{{items}}' wx:for-item='item' wx:for-index='index' wx:key='index' bind:tap='onTap' data-index='{{index}}' props='{{item}}' class='item'>
+    </Item>
+  </view>
+  <view wx:else style='align-items: center; display: flex; flex: 1 1 auto; flex-direction: column; height: 100%; justify-content: center; '>
+    <label style='color: gray; margin-top: 100rpx; '>暂无数据</label>
+  </view>
+</view>

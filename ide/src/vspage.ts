@@ -75,7 +75,7 @@ export const VsCode = new class implements IVsCode {
   patchStyle(path: TyPath, target: string, patch: StylePatch): void {
     this.request({
       method: 'patchStyle',
-      params: [target, patch],
+      params: [path, target, patch],
     });
   }
   select(path: TyPath, target: string | null): void {

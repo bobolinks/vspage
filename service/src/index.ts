@@ -2,7 +2,6 @@ import os from 'os';
 import path from 'path';
 import url from 'url';
 import express from 'express';
-import proxy from 'express-http-proxy';
 import bodyParser from 'body-parser';
 import open from 'open';
 import env from './environment';
@@ -10,6 +9,7 @@ import { logger } from './utils/logger';
 import rpc from './rpc';
 import modules from './modules/index';
 import rs from './rs/index';
+import { Net } from './utils';
 
 if (!env.debug) {
   process.on('uncaughtException', (err) => {
@@ -39,35 +39,8 @@ expr.all('*', (req, res, next) => {
 function applyRoutingRules() {
   expr.use(bodyParser.urlencoded({ limit: '30mb', extended: false }));
   expr.use(bodyParser.json({ limit: '30mb' }));
-  expr.use('/plugin.html', (request, response) => response.redirect('/__ide__/plugin.html'));
-  // expr.use('/__wesim_index__', proxy(
-  //   `http://localhost:${env.address.port}`,
-  //   {
-  //     proxyReqPathResolver(req) {
-  //       return '/__ide__/index';
-  //     },
-  //     userResHeaderDecorator(headers, userReq, userRes, proxyReq, proxyRes) {
-  //       headers.location = '/__wesim_index__';
-  //       return headers;
-  //     },
-  //   },
-  // ));
-
-  // if (env.debug) {
-  //   expr.use('/__ide__', proxy(
-  //     'http://localhost:3000',
-  //     {
-  //       proxyReqPathResolver(req) {
-  //         return `/__ide__${url.parse(req.url).path}`;
-  //       },
-  //     },
-  //   ));
-  // } else {
-  //   const webPath = path.join(env.paths.bin, '__ide__');
-  //   logger.info(`Web root[${webPath}]`);
-  //   expr.use('/__ide__', express.static(webPath));
-  // }
-
+  expr.use('/__ide__', express.static(path.join(env.paths.bin, '__ide__')));
+  expr.use('/service-worker.js', express.static(path.join(env.paths.bin, '__ide__/service-worker.js')));
   rs.init(expr);
 }
 
@@ -82,53 +55,58 @@ function loadModules(app: any) {
 }
 
 // lsof -i:3080
-logger.info('WeSim deamon initializing...');
-const upgradeEvents: any = {};
-const app = expr.listen(env.args.port || 0, () => {
-  /** init express upgrade hook */
-  (app as any).onUpgrade = function (name: string | number, cb: any) {
-    upgradeEvents[name] = cb;
-  };
-  (app as any).downUpgrade = (name: string | number) => delete upgradeEvents[name];
+logger.info('VsPage deamon initializing...');
 
-  app.on('upgrade', (request, socket, head) => {
-    const pathInfo = request.url ? url.parse(request.url) : { pathname: undefined };
-    const { pathname } = pathInfo;
-    const cb = upgradeEvents[pathname || ''];
-    if (cb) cb(request, socket, head);
-  });
+async function start() {
+  const upgradeEvents: any = {};
+  const port = await Net.choosePort(4040);
+  const app = expr.listen(port, () => {
+    /** init express upgrade hook */
+    (app as any).onUpgrade = function (name: string | number, cb: any) {
+      upgradeEvents[name] = cb;
+    };
+    (app as any).downUpgrade = (name: string | number) => delete upgradeEvents[name];
 
-  loadModules(app);
-
-  const { port } = app.address() as any;
-
-  env.address.port = port;
-
-  applyRoutingRules();
-
-  process.stdout.write(`[port=${port}]\n`);
-
-  app.setTimeout(120000);
-  if (env.args.open) {
-    open(`http://localhost:${port}/`, {
-      app: {
-        name: 'chrome',
-      },
+    app.on('upgrade', (request, socket, head) => {
+      const pathInfo = request.url ? url.parse(request.url) : { pathname: undefined };
+      const { pathname } = pathInfo;
+      const cb = upgradeEvents[pathname || ''];
+      if (cb) cb(request, socket, head);
     });
-  }
-  const interfaces: any = [];
-  Object.values(os.networkInterfaces()).forEach((e) => {
-    if (!e) {
-      return;
+
+    loadModules(app);
+
+    const { port } = app.address() as any;
+
+    env.address.port = port;
+
+    applyRoutingRules();
+
+    process.stdout.write(`[port=${port}]\n`);
+
+    app.setTimeout(120000);
+    if (env.args.open) {
+      open(`http://localhost:${port}/`, {
+        app: {
+          name: 'chrome',
+        },
+      });
     }
-    e.filter(detail => detail.family === 'IPv4').forEach((detail) => {
-      interfaces.push(detail);
-      if (!/^127\./.test(detail.address)) {
-        env.address.host = detail.address;
-        env.address.url = `http://${detail.address}:${port}/__wesim_index__`;
+    const interfaces: any = [];
+    Object.values(os.networkInterfaces()).forEach((e) => {
+      if (!e) {
+        return;
       }
+      e.filter(detail => detail.family === 'IPv4').forEach((detail) => {
+        interfaces.push(detail);
+        if (!/^127\./.test(detail.address)) {
+          env.address.host = detail.address;
+        }
+      });
     });
-  });
 
-  logger.info(`WeSim started, open link to access : ${interfaces.map((e: { address: any; }) => `http://${e.address}:${port}/__wesim_index__`).join(', ')}`);
-});
+    logger.info(`VsPage started, listening on : ${interfaces.map((e: { address: any; }) => `http://${e.address}:${port}`).join(', ')}`);
+  });
+}
+
+start();

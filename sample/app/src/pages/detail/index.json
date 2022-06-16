@@ -1,0 +1,10 @@
+{
+  "usingComponents": {
+    "EChart": "../../components/echarts/index",
+    "Summary": "../../components/summary/index",
+    "table": "../../components/table/index"
+  },
+  "navigationBarBackgroundColor": "#D04453",
+  "navigationBarTextStyle": "white",
+  "disableScroll": true
+}

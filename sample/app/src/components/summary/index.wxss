@@ -1,0 +1,28 @@
+.summary {
+  background-color: #D04453;
+  color: white;
+  min-height: 160rpx;
+  flex: 0 0 0%;
+  display: flex;
+  flex-direction: column;
+  font-size: 48rpx;
+  font-weight: 700;
+  align-items: stretch;
+  padding: 10rpx 16rpx;
+}
+
+.summary .sumcol {
+  position: relative;
+}
+
+.summary .colTitle {
+  position: absolute;
+  font-size: 18rpx;
+  top: 0.2em;
+  color: #f2f2f2;
+}
+
+.summary .intro {
+  font-size: 18rpx;
+  color: #f2f2f2;
+}

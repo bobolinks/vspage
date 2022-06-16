@@ -1,0 +1,9 @@
+<view class='page theme1' style='align-items: stretch; display: flex; flex-direction: column; flex-wrap: nowrap;'>
+  <topbar bind:search='search' name='{{tab}}'></topbar>
+  <view wx:if='{{!ready}}' class='container' style='align-items: center; display: flex; flex-direction: column; justify-content: center;'>
+    <label style='font-size: 32rpx;'>正在更新数据...</label>
+  </view>
+  <table wx:elif="{{tab === 'service'}}" name='{{tab}}' key='{{key}}' bind:action='showDetail' class='container'></table>
+  <table wx:else name='{{tab}}' key='{{key}}' bind:action='showDetail' class='container'></table>
+  <tabs bind:action='onGoto'></tabs>
+</view>

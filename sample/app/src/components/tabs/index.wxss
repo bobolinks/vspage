@@ -1,0 +1,47 @@
+.tabs {
+  flex: 0 0 0%;
+  width: 100vw;
+  font-size: 22rpx;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  background-color: white;
+  color: black;
+  position: relative;
+  box-shadow: 0 0 8px 0 lightgray;
+  height: 90rpx;
+  min-height: 90rpx;
+  max-height: 90rpx;
+}
+
+.tabs .item {
+  flex: 1 1 25%;
+  display: flex;
+  flex-direction: column;
+  justify-self: stretch;
+  border-left: 1px solid #f2f2f2;
+  color: #222;
+}
+
+.item:first-child {
+  border-left: none;
+}
+
+.item i {
+  font-size: 40rpx;
+  padding: 10rpx 0;
+}
+
+.item label {
+  font-size: 20rpx;
+  font-weight: 300;
+  flex: 1 1 auto;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.item[data-selected="true"] {
+  color: #ff0033;
+  font-weight: 500;
+}
