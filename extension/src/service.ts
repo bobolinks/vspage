@@ -1,9 +1,11 @@
 import fs from 'fs';
 import path from 'path';
+import { ChildProcess, spawn } from 'child_process';
 import * as vscode from 'vscode';
 import { MessageData, StylePatch, VsCode as VsCodeService } from 'vspage';
 import utils from './utils';
 import { TyAstRoot } from './utils/html';
+import shelljs from 'shelljs';
 
 const wxmlEmitter = {
   textContent(ast: TyAstText) {
@@ -121,9 +123,40 @@ export function transpileWxml(src: string): TyAstRoot {
 }
 
 export class Service implements VsCodeService, vscode.Disposable {
-  constructor(private miniroot: string, private terminal: vscode.EventEmitter<string>) {
+  private srvpro?: ChildProcess;
+  constructor(private extroot: string, private workspacePath: string, private minisrc: string, private terminal: vscode.EventEmitter<string>) {
+  }
+  launchService(): Promise<number> {
+    if (this.srvpro) {
+      throw 'Aready launched';
+    }
+    const child = shelljs.exec(`node ./service.js --root=${this.workspacePath}`, {
+      cwd: this.extroot,
+      async: true,
+    });
+    this.srvpro = child;
+    let resolved = false;
+    return new Promise<number>((resolve, reject) => {
+      child.stdout?.on('data', (data) => {
+        if (!resolved) {
+          const ms = /\[port=(\d+)\]/.exec(data);
+          if (ms) {
+            resolved = true;
+            resolve(parseInt(ms[1]));
+          }
+        }
+      });
+      child.on('exit', (code) => {
+        this.srvpro = undefined;
+        if (!resolved) {
+          reject(0);
+        }
+        console.error(`vspage service exit with code[${code}]`);
+      });
+    });
   }
   dispose() {
+    this.srvpro?.kill(-9);
   }
   alert(data: string | MessageData): void {
     const message = typeof data === 'string' ? data : data.message;
@@ -151,7 +184,7 @@ export class Service implements VsCodeService, vscode.Disposable {
     this.terminal.fire('\x1b[0m\r\n');
   }
   patchStyle(pagePath: TyPath, target: string, patch: StylePatch): void {
-    const absFilePath = path.join(this.miniroot, `${pagePath}.wxml`);
+    const absFilePath = path.join(this.minisrc, `${pagePath}.wxml`);
     const editor = vscode.window.visibleTextEditors.find(e => utils.path.compatible(e.document.uri.path) === absFilePath);
     const src = editor ? editor.document.getText() : fs.readFileSync(absFilePath, 'utf8');
     const ast = transpileWxml(src);

@@ -1,6 +1,6 @@
-const version = 'v1.0.2';
+const version = 'v1.0.1';
 
-this.addEventListener('install', function (event) {
+self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(version).then(function (cache) {
       return cache.addAll([

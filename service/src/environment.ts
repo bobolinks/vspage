@@ -106,7 +106,7 @@ if (!fs.existsSync(env.paths.temp)) {
   fs.mkdirSync(env.paths.temp);
 }
 
-for (const iterator of ['usr', 'data', 'cloud']) {
+for (const iterator of ['usr', 'data', 'cloud', 'logs']) {
   const p = path.join(env.paths.temp, iterator);
   if (!fs.existsSync(p)) {
     fs.mkdirSync(p);

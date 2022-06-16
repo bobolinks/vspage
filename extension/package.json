@@ -36,7 +36,6 @@
     "lint": "eslint . --ext .ts,.tsx",
     "pre": "webpack --mode development",
     "dev": "webpack --mode development --watch",
-    "build": "rm -f ../*.vsix ../dist/*.js.map && webpack --mode production && cd ../dist && vsce package && mv *.vsix ../",
     "pack": "rm -f ../*.vsix && cd ../dist && vsce package && mv *.vsix ../"
   },
   "devDependencies": {
@@ -45,6 +44,7 @@
     "@types/md5": "^2.3.0",
     "@types/node": "^14.14.31",
     "@types/prettier": "^2.2.3",
+    "@types/shelljs": "^0.8.11",
     "@types/vscode": "^1.50.0",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
     "@typescript-eslint/parser": "^5.27.1",
@@ -59,6 +59,7 @@
     "css": "^3.0.0",
     "html-parser": "^0.11.0",
     "md5": "^2.3.0",
+    "shelljs": "^0.8.5",
     "typescript": "^4.7.3"
   }
 }

@@ -6283,6 +6283,7 @@ const fs_1 = __importDefault(__webpack_require__(/*! fs */ "fs"));
 const path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
 const vscode = __importStar(__webpack_require__(/*! vscode */ "vscode"));
 const utils_1 = __importDefault(__webpack_require__(/*! ./utils */ "./src/utils/index.ts"));
+const shelljs_1 = __importDefault(__webpack_require__(/*! shelljs */ "shelljs"));
 const wxmlEmitter = {
     textContent(ast) {
         return utils_1.default.wxml.stringifyToText(ast.text);
@@ -6407,11 +6408,45 @@ function transpileWxml(src) {
 }
 exports.transpileWxml = transpileWxml;
 class Service {
-    constructor(miniroot, terminal) {
-        this.miniroot = miniroot;
+    constructor(extroot, workspacePath, minisrc, terminal) {
+        this.extroot = extroot;
+        this.workspacePath = workspacePath;
+        this.minisrc = minisrc;
         this.terminal = terminal;
     }
+    launchService() {
+        if (this.srvpro) {
+            throw 'Aready launched';
+        }
+        const child = shelljs_1.default.exec(`node ./service.js --root=${this.workspacePath}`, {
+            cwd: this.extroot,
+            async: true,
+        });
+        this.srvpro = child;
+        let resolved = false;
+        return new Promise((resolve, reject) => {
+            var _a;
+            (_a = child.stdout) === null || _a === void 0 ? void 0 : _a.on('data', (data) => {
+                if (!resolved) {
+                    const ms = /\[port=(\d+)\]/.exec(data);
+                    if (ms) {
+                        resolved = true;
+                        resolve(parseInt(ms[1]));
+                    }
+                }
+            });
+            child.on('exit', (code) => {
+                this.srvpro = undefined;
+                if (!resolved) {
+                    reject(0);
+                }
+                console.error(`vspage service exit with code[${code}]`);
+            });
+        });
+    }
     dispose() {
+        var _a;
+        (_a = this.srvpro) === null || _a === void 0 ? void 0 : _a.kill(-9);
     }
     alert(data) {
         const message = typeof data === 'string' ? data : data.message;
@@ -6441,7 +6476,7 @@ class Service {
         this.terminal.fire('\x1b[0m\r\n');
     }
     patchStyle(pagePath, target, patch) {
-        const absFilePath = path_1.default.join(this.miniroot, `${pagePath}.wxml`);
+        const absFilePath = path_1.default.join(this.minisrc, `${pagePath}.wxml`);
         const editor = vscode.window.visibleTextEditors.find(e => utils_1.default.path.compatible(e.document.uri.path) === absFilePath);
         const src = editor ? editor.document.getText() : fs_1.default.readFileSync(absFilePath, 'utf8');
         const ast = transpileWxml(src);
@@ -7564,7 +7599,7 @@ class WebView {
         });
         this.terminal.show(true);
         // init service
-        this.service = new service_1.Service(this.minirootPath, writeEmitter);
+        this.service = new service_1.Service(this.context.asAbsolutePath(''), this.workspacePath, this.minirootPath, writeEmitter);
         // init vspage
         this.vspage = new vspage_1.VsPage(this.panel.webview, this.service);
         // setup
@@ -7590,19 +7625,20 @@ class WebView {
         WebView.currentPanel = new WebView(context, panel);
     }
     async setup() {
-        await this.setupView();
+        const port = await this.service.launchService();
+        await this.setupView(port);
         await this.setupEvents();
     }
-    async setupView() {
+    async setupView(port) {
         // Use a nonce to only allow specific scripts to be run
         const { webview } = this.panel;
         this.panel.iconPath = {
             light: vscode.Uri.parse(this.context.asAbsolutePath(path_1.default.join('__ide__', 'logo.svg'))),
             dark: vscode.Uri.parse(this.context.asAbsolutePath(path_1.default.join('__ide__', 'logo.svg'))),
         };
-        this.panel.title = 'Vide';
+        this.panel.title = 'VsPage';
         // todo:
-        const host = `http://localhost:4040`;
+        const host = `http://localhost:${port}`;
         webview.html = `<!DOCTYPE html>
       <html lang="en">
       <head>
@@ -7830,6 +7866,17 @@ class WebView {
 }
 exports.WebView = WebView;
 
+
+/***/ }),
+
+/***/ "shelljs":
+/*!**************************!*\
+  !*** external "shelljs" ***!
+  \**************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("shelljs");
 
 /***/ }),
 

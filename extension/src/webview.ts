@@ -122,7 +122,7 @@ export class WebView {
     this.terminal.show(true);
 
     // init service
-    this.service = new Service(this.minirootPath, writeEmitter);
+    this.service = new Service(this.context.asAbsolutePath(''), this.workspacePath, this.minirootPath, writeEmitter);
 
     // init vspage
     this.vspage = new VsPage(this.panel.webview, this.service);
@@ -131,10 +131,11 @@ export class WebView {
     this.setup();
   }
   async setup() {
-    await this.setupView();
+    const port = await this.service.launchService();
+    await this.setupView(port);
     await this.setupEvents();
   }
-  async setupView() {
+  async setupView(port: number) {
     // Use a nonce to only allow specific scripts to be run
     const { webview } = this.panel;
 
@@ -142,10 +143,10 @@ export class WebView {
       light: vscode.Uri.parse(this.context.asAbsolutePath(path.join('__ide__', 'logo.svg'))),
       dark: vscode.Uri.parse(this.context.asAbsolutePath(path.join('__ide__', 'logo.svg'))),
     };
-    this.panel.title = 'Vide';
+    this.panel.title = 'VsPage';
 
     // todo:
-    const host = `http://localhost:4040`;
+    const host = `http://localhost:${port}`;
 
     webview.html = `<!DOCTYPE html>
       <html lang="en">
