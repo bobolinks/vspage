@@ -3,7 +3,7 @@ import path from 'path';
 import md5 from 'md5';
 import mime from 'mime';
 import stream from 'stream';
-import express, { Express } from 'express';
+import { Express } from 'express';
 import env from '../environment';
 import Editor from '../modules/editor';
 import { lookupModule } from './lookup';
@@ -30,9 +30,13 @@ export default {
       Editor.fileChanged(filePath, isDeleted ? 0 : fs.statSync(relPath).mtimeMs);
     });
     wxfs.installFileSystem(expr);
-    expr.use('/__app__', async (request, response, next) => {
+    // disable service worker
+    // expr.use('/__app__', async (request, response, next) => {
+    expr.use('/', async (request, response, next) => {
       let [url, query] = request.originalUrl.split('?');
-      let filePathRel = url.replace(/^\/+__app__\//, '');
+      // disable service worker
+      // let filePathRel = url.replace(/^\/+__app__\//, '');
+      let filePathRel = url.replace(/^\//, '');
       if (!filePathRel) {
         return next();
       }
@@ -196,6 +200,7 @@ export default {
       }
       readStream.pipe(response);
     });
-    expr.use('/', express.static(env.paths.minisrc));
+    // disable service worker
+    // expr.use('/', express.static(env.paths.minisrc));
   },
 };

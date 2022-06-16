@@ -89,6 +89,8 @@ export function renderPage(page: WxPageInstance) {
       Editor.select(e);
     };
   });
+
+  page.rendered = true;
 }
 
 export class TPage implements WxPageInstance {
@@ -100,6 +102,7 @@ export class TPage implements WxPageInstance {
   iframe: HTMLIFrameElement;
   path: string;
   scoped: string;
+  rendered: boolean = false;
   constructor(public url: string, config: PageConfig, data: Partial<PageData>) {
     const path = url.split('?')[0];;
     const id = path.replace(/[^0-9a-z-]/ig, '-');
@@ -144,7 +147,7 @@ export class TPage implements WxPageInstance {
         l.href = link;
         head.insertBefore(l, head.children[1]);
       });
-      Object.assign(this.iframe.contentWindow, wxGlobal);
+      Object.assign(this.iframe.contentWindow as any, wxGlobal);
       (this.iframe.contentWindow as any).wx = wx;
       (this.iframe.contentWindow as any).Component = function (o: any) {
         const props = o.properties || {};

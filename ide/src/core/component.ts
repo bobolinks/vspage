@@ -1,7 +1,7 @@
 import store, { files } from '../store';
 import { TyAttrsMap } from '../utils/dom';
 import { Cache, Sys, Path, Wxml, Dom } from '../utils/index';
-import { TPage } from './page';
+import { VsCode } from '../vspage';
 
 type WxComponentInstance = WechatMiniprogram.Component.TrivialInstance & Pick<WechatMiniprogram.Component.Lifetimes, 'lifetimes'>;
 type WxComponentOptions = WechatMiniprogram.Component.TrivialOption;
@@ -176,9 +176,17 @@ export class WxComponent extends HTMLElement {
     const wxssPath = Cache.withStamp(`${this.instance.path}.wxss?scoped=${this.instance.scoped}`, files);
     Sys.mountLink(`stylesheet-component-${tag}`, wxssPath, Cache.findStamp(wxssPath, files), {}, currPage.iframe.contentDocument);
     this.render();
-    this.instance.lifetimes.attached?.call(this.instance);
-    const ready = this.instance.lifetimes.ready || (this.instance as any).ready;
-    ready?.call(this.instance);
+    try {
+
+      this.instance.lifetimes.attached?.call(this.instance);
+      const ready = this.instance.lifetimes.ready || (this.instance as any).ready;
+      ready?.call(this.instance);
+    } catch (e: any) {
+      VsCode.alert({
+        type: 'error',
+        message: e.message || e.toString(),
+      });
+    }
   }
   disconnectedCallback() {
     if (this.instance) {

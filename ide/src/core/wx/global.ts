@@ -1,6 +1,7 @@
 import { Sys } from '../../utils/index';
 import store from '../../store';
-import { bindPage, } from '../page';
+import { bindPage, renderPage, } from '../page';
+import { VsCode } from '../../vspage';
 
 let instance = null as WechatMiniprogram.App.Options<any>;
 
@@ -45,9 +46,19 @@ export const wxGlobal: WxGlobal = {
     const currPage = pages[pages.length - 1];
     bindPage(currPage, options);
     const [, query] = store.currPage.split('?');
-    currPage.onLoad(Object.fromEntries((query || '').split('&').map(v => v.split('='))));
-    currPage.onShow();
-    currPage.onReady();
+    try {
+      currPage.onLoad(Object.fromEntries((query || '').split('&').map(v => v.split('='))));
+      currPage.onShow();
+      currPage.onReady();
+    } catch (e: any) {
+      VsCode.alert({
+        type: 'error',
+        message: e.message || e.toString(),
+      });
+    }
+    if (!currPage.rendered) {
+      renderPage(currPage);
+    }
   },
   getCurrentPages() {
     return store.pages as any;
@@ -61,7 +72,15 @@ export const wxGlobal: WxGlobal = {
     return '';
   },
   require(file): Promise<any> {
-    return Sys.import(file);
+    try {
+      return Sys.import(file);
+    } catch (e: any) {
+      VsCode.alert({
+        type: 'error',
+        message: e.message || e.toString(),
+      });
+      throw e;
+    }
   }
 };
 

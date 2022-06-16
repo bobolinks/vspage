@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 import { MessageData, StylePatch, VsCode as VsCodeService } from 'vspage';
 import utils from './utils';
 import { TyAstRoot } from './utils/html';
-import shelljs, { cat } from 'shelljs';
+import shelljs from 'shelljs';
 
 const wxmlEmitter = {
   textContent(ast: TyAstText) {
@@ -165,14 +165,12 @@ export class Service implements VsCodeService, vscode.Disposable {
   alert(data: string | MessageData): void {
     const message = typeof data === 'string' ? data : data.message;
     const type = typeof data === 'string' ? 'info' : data.type;
-    let items: Array<string> = typeof message === 'string' ? [message] : [];
+    let items: Array<string> = typeof message === 'string' ? [`[${type.toUpperCase()}] ${message}]`] : [];
     if (typeof message !== 'string') {
-      if (typeof message === 'string') {
-        items.push(message);
-      } else if (Array.isArray(message)) {
-        items = message;
+      if (Array.isArray(message)) {
+        items = (message as any).map((e: any) => `[${type.toUpperCase()}] ${e}`);
       } else {
-        items.push(JSON.stringify(message));
+        items.push(`[${type.toUpperCase()}] ${JSON.stringify(message)}`);
       }
     }
     const colors = {

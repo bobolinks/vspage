@@ -17,17 +17,11 @@ async function regService() {
     if (wk) {
       return;
     }
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(function () {
-      }).catch(function (error) {
-        console.log(error);
-      });
+    await navigator.serviceWorker.register('/service-worker.js');
   } else {
     console.log(`The current browser doesn't support service workers.`);
   }
 }
-
-regService();
 
 if (!(window as any).$) {
   ((window as any)).$ = (selector: string, doc?: Document) => (doc || document).querySelector(selector);
@@ -59,13 +53,20 @@ const router = createRouter({
 });
 app.use(router);
 
-appLifeCircle.beforeLaunch(app, store, router);
+async function main() {
+  // disable service worker
+  // await regService();
 
-const vue = app.mount('#app');
+  appLifeCircle.beforeLaunch(app, store, router);
 
-// @ts-ignore
-window.__vue = vue;
+  const vue = app.mount('#app');
 
-vue.$nextTick(() => {
-  appLifeCircle.onLaunched(app, store, router);
-});
+  // @ts-ignore
+  window.__vue = vue;
+
+  vue.$nextTick(() => {
+    appLifeCircle.onLaunched(app, store, router);
+  });
+}
+
+main();
