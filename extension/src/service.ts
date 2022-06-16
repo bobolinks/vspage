@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 import { MessageData, StylePatch, VsCode as VsCodeService } from 'vspage';
 import utils from './utils';
 import { TyAstRoot } from './utils/html';
-import shelljs from 'shelljs';
+import shelljs, { cat } from 'shelljs';
 
 const wxmlEmitter = {
   textContent(ast: TyAstText) {
@@ -156,7 +156,11 @@ export class Service implements VsCodeService, vscode.Disposable {
     });
   }
   dispose() {
-    this.srvpro?.kill(-9);
+    try {
+      this.srvpro?.kill(9);
+    } catch (e) {
+      console.error(e);
+    }
   }
   alert(data: string | MessageData): void {
     const message = typeof data === 'string' ? data : data.message;

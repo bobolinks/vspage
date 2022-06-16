@@ -140,8 +140,8 @@ export class WebView {
     const { webview } = this.panel;
 
     this.panel.iconPath = {
-      light: vscode.Uri.parse(this.context.asAbsolutePath(path.join('__ide__', 'logo.svg'))),
-      dark: vscode.Uri.parse(this.context.asAbsolutePath(path.join('__ide__', 'logo.svg'))),
+      light: vscode.Uri.parse(this.context.asAbsolutePath('logo.svg')),
+      dark: vscode.Uri.parse(this.context.asAbsolutePath('logo.svg')),
     };
     this.panel.title = 'VsPage';
 
