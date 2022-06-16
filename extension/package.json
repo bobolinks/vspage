@@ -32,10 +32,9 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "webpack --mode production",
-    "lint": "eslint . --ext .ts,.tsx",
     "pre": "webpack --mode development",
     "dev": "webpack --mode development --watch",
+    "build": "webpack --mode production",
     "pack": "rm -f ../*.vsix && cd ../dist && vsce package && mv *.vsix ../"
   },
   "devDependencies": {

@@ -1,8 +1,9 @@
 /* eslint-disable max-len */
 import * as vscode from 'vscode';
-import { WebView } from './webview';
+import { prepare } from './prepare';
 
-export function activate(context: vscode.ExtensionContext) {
+async function setup(context: vscode.ExtensionContext) {
+  const { WebView } = require('./webview');
   context.subscriptions.push(vscode.commands.registerCommand('vide', () => {
     WebView.createOrShow(context);
   }));
@@ -19,5 +20,16 @@ export function activate(context: vscode.ExtensionContext) {
         WebView.revive(context, webviewPanel);
       },
     });
+  }
+}
+
+export function activate(context: vscode.ExtensionContext) {
+  const rs = prepare(context.extensionPath);
+  if (typeof rs === 'boolean') {
+    setup(context);
+  } else {
+    rs.then(() => {
+      setup(context);
+    })
   }
 }
