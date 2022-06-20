@@ -2,7 +2,7 @@
   "name": "vspage",
   "description": "VsPage - Layout tool for vscode",
   "version": "0.0.1",
-  "publisher": "vspage",
+  "publisher": "bobolinks",
   "engines": {
     "vscode": "^1.50.0"
   },
