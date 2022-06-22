@@ -12,29 +12,28 @@ export default {
     }
     return new Promise((reslove, reject) => {
       const d = contentDocument || document;
-      let e = d.getElementById(id) as HTMLLinkElement;
-      if (e && e.getAttribute('t') !== timestamp.toString()) {
-        d.head.removeChild(e);
-        e = null as any;
+      let o = d.getElementById(id) as HTMLLinkElement;
+      if (o && o.getAttribute('t') === timestamp.toString()) {
+        return reslove(o);
       }
-      if (!e) {
-        e = d.createElement('link');
-        e.setAttribute('id', id);
-        e.rel = 'stylesheet';
-        e.href = path;
-        e.setAttribute('t', timestamp.toString());
-        for (const [k, v] of Object.entries(attrs || {})) {
-          e.setAttribute(k, v);
-        }
-        e.onload = () => {
-          reslove(e);
-        }
-        e.onerror = (err) => {
-          reject(err);
-        }
-        d.head.appendChild(e);
-      } else {
+      const e = d.createElement('link');
+      e.setAttribute('id', id);
+      e.rel = 'stylesheet';
+      e.href = path;
+      e.setAttribute('t', timestamp.toString());
+      for (const [k, v] of Object.entries(attrs || {})) {
+        e.setAttribute(k, v);
+      }
+      e.onload = () => {
         reslove(e);
+      }
+      e.onerror = (err) => {
+        reject(err);
+      }
+      if (o) {
+        d.head.replaceChild(e, o);
+      } else {
+        d.head.appendChild(e);
       }
     });
   },

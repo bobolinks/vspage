@@ -12,8 +12,8 @@ export default function (code: string, filePath: string): string {
       :root { --devicePixelRatio: 1; }
       html,body {padding: 0; margin: 0;}
     </style>
-    <link id="stylesheet-app" rel="stylesheet" href="/app.wxss" />
-    <link id="stylesheet-page" rel="stylesheet" href="./${name}.wxss" />
+    <link id="stylesheet-app" rel="stylesheet" href="/app.wxss?t=0" />
+    <link id="stylesheet-page" rel="stylesheet" href="./${name}.wxss?t=0" />
     <script>
       window.wxml = unescape('${escape(code)}');
       function autoScale() {

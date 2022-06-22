@@ -1,9 +1,10 @@
 
 import { readonly } from 'vue';
 import { VsPage as IVsPage, VsCode as IVsCode, Editor as IEditor, StylePatch, PageData, MessageData } from 'vspage';
-import store from './store';
+import store, { files } from './store';
 import wxApp from './core/app';
 import { renderPage, updateSelector } from './core/page';
+import { Sys } from './utils';
 
 const w = window as any;
 
@@ -27,6 +28,47 @@ export const VsPage = new class implements IVsPage {
       (page.iframe.contentWindow as any).wxml = data.wxml;
     }
     renderPage(page);
+  }
+  /** 更新文件wxss|xs */
+  updateFile(path: TyPath, timestamp: number) {
+    if (!timestamp) {
+      delete files[path];
+    } else {
+      files[path] = { timestamp };
+    }
+    if (/\.(t|j)s$/i.test(path)) {
+      wxApp.relaunch({
+        url: path.replace(/\.(t|j)s$/i, ''),
+      });
+    } else {
+      const simulator = document.querySelector('#simulator > iframe') as HTMLIFrameElement;
+      const doc = simulator?.contentDocument;
+      if (!doc) {
+        throw new Error('doc is null');
+      }
+      const pathWithSlash = path.replace(/^([^/])/g, '/$1');
+      if (pathWithSlash === '/app.wxss') {
+        Sys.mountLink('stylesheet-app', `${pathWithSlash}?t=${timestamp}`, timestamp, {}, doc);
+      } else if (pathWithSlash.startsWith(store.currPage)) {
+        Sys.mountLink('stylesheet-page', `${pathWithSlash}?t=${timestamp}`, timestamp, {}, doc);
+      } else {
+        const links = doc.querySelectorAll('link[rel=stylesheet]');
+        let linkFound: HTMLLinkElement | null = null;
+        for (let i = 0; i < links.length; i++) {
+          const link = links[i] as HTMLLinkElement;
+          if (link.href.indexOf(path) !== -1) {
+            linkFound = link;
+            break;
+          }
+        }
+        if (linkFound) {
+          const query = (linkFound.href.split('?')[1] || '').replace(/t=\d+/, `t=${timestamp}`);
+          Sys.mountLink(linkFound.id, `${pathWithSlash}?${query}`, timestamp, {}, doc);
+        } else {
+          throw new Error('link not found');
+        }
+      }
+    }
   }
   select(target: string | null): void {
     const simulator = document.querySelector('#simulator > iframe') as HTMLIFrameElement;

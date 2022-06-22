@@ -232,6 +232,7 @@ export class WebView {
   private onDidSaveTextDocument(e: vscode.TextDocument) {
     const curPath = utils.path.compatible(e.uri.path);
     const relPath = utils.path.relative(this.projectPath, curPath);
+    const relPagePath = utils.path.relative(this.minirootPath, curPath)
     if (/^\.+\//.test(relPath)) {
       return;
     }
@@ -240,7 +241,7 @@ export class WebView {
     } else if (relPath === vspageConfigFile) {
       this.reloadVsPageConfig();
     } else if (/(?<!\.d)\.ts/i.test(relPath) && !utils.isMatchedVx(relPath, this.exclude)) {
-      const jsFile = utils.path.compatible(e.uri.path.replace(/\.ts$/, '.js'));
+      const jsFile = curPath.replace(/\.ts$/, '.js');
       const rs = ts.transpileModule(e.getText(), {
         compilerOptions: {
           alwaysStrict: true,
@@ -251,6 +252,9 @@ export class WebView {
       if (rs) {
         fs.writeFileSync(jsFile, `/* eslint-disable */\n${rs.outputText}`, 'utf-8');
       }
+      this.vspage.updateFile(relPagePath, fs.statSync(curPath).mtimeMs);
+    } else if (/(?<!\.d)\.wxss/i.test(relPath)) {
+      this.vspage.updateFile(relPagePath, fs.statSync(curPath).mtimeMs);
     }
   }
   private onDidCloseTextDocument(e: vscode.TextDocument) {

@@ -14,6 +14,8 @@ declare module 'vspage' {
     setCurrentPage(path: TyPath, data: PageData): void;
     /** 更新页面 */
     updatePage(path: TyPath, data: Partial<PageData>): void;
+    /** 更新文件wxss|xs */
+    updateFile(path: TyPath, timestamp: number);
     /** 同步选中元素 */
     select(target: TyAstPath | null): void;
   }

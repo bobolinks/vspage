@@ -32,6 +32,13 @@ export class VsPage implements IVsPage, vscode.Disposable {
       params: [...arguments],
     });
   }
+  /** 更新文件wxss|xs */
+  updateFile(path: TyPath, timestamp: number) {
+    this.request({
+      method: 'updateFile',
+      params: [...arguments],
+    });
+  }
   select(target: string | null): void {
     this.request({
       method: 'select',
