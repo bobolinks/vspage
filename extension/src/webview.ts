@@ -166,6 +166,7 @@ export class WebView {
           min-height: 100vh !important;
           height: 100vh !important;
         }
+        ::-webkit-scrollbar{display:none;}
         </style>
         <script nonce="${this.nonce}">
           window.addEventListener('message', event => {

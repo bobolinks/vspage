@@ -24,6 +24,18 @@
         "--root=${workspaceFolder}/sample"
       ],
       "cwd": "${workspaceFolder}/service"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "viwx",
+      "program": "${workspaceFolder}/service/node_modules/ts-node/dist/bin.js",
+      "args": [
+        "${workspaceFolder}/viwx/src/index.ts",
+        "--root=${workspaceFolder}/sample",
+        "-h"
+      ],
+      "cwd": "${workspaceFolder}/viwx"
     }
   ]
 }

@@ -16,7 +16,8 @@
   ],
   "files.associations": {
     "*.wxss": "css",
-    "*.wxs": "javascript"
+    "*.wxs": "javascript",
+    "*.wts": "typescript",
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "[json]": {
