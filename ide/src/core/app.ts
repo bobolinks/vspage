@@ -22,6 +22,9 @@ export default {
     if (store.config.usingComponents) {
       formatUsingCompoents(store.config.usingComponents, '/');
     }
+    return await this.relaunch({
+      url: store.homePage,
+    });
   },
   async relaunch(options: Partial<WechatMiniprogram.ReLaunchOption>) {
     // mount app
@@ -31,5 +34,12 @@ export default {
     await wx.navigateTo({
       url: options.url || 'pages/index/index',
     })
+  },
+  async reloadPage() {
+    // mount components
+    await loadComponents(store.config.usingComponents || {});
+    await wx.navigateTo({
+      url: store.homePage,
+    });
   }
 };

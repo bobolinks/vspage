@@ -1,4 +1,4 @@
-import store from '../../store';
+import store, { files } from '../../store';
 import { TPage } from '../page';
 import { Cache, Sys, Path } from '../../utils/index';
 import { formatUsingCompoents, loadComponents } from '../component';
@@ -17,7 +17,7 @@ wx.navigateTo = async function (options: NavigateToOption) {
   }
   const url = Path.relative(store.currPage || '/', options.url);
   const path = url.split('?')[0];
-  const pageOptions = await Sys.import(`${path}.json?import=module`);
+  const pageOptions = await Sys.import(Cache.withStamp(`${path}.json?import=module`, files));
   if (pageOptions.usingComponents) {
     formatUsingCompoents(pageOptions.usingComponents, path);
     await loadComponents(pageOptions.usingComponents);

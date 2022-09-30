@@ -22,14 +22,19 @@ export default {
         url: value,
       });
     });
-    rpc.describe('file:changed', (file: string, timestamp: number) => {
-      if (!timestamp) {
-        delete files[file];
-      } else {
-        files[file] = { timestamp };
+    rpc.describe('file:changed', ({ filePath, timestamp }: { filePath: string, timestamp: number }) => {
+      if (filePath[0] !== '/') {
+        filePath = `/${filePath}`;
       }
-      if (file === '/project.json') {
+      if (!timestamp) {
+        delete files[filePath];
+      } else {
+        files[filePath] = { timestamp };
+      }
+      if (filePath === '/project.json') {
         wxApp.tryReload();
+      } else {
+        wxApp.reloadPage();
       }
     }, this);
   },
