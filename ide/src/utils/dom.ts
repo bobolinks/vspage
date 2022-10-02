@@ -18,12 +18,13 @@ function createElement(instance: any, tag: string, options: TyCreateOptions) {
   const el = node ? node.$$ : document.createElement(tag);
   const data: Record<string, string | number | boolean> = {};
   const keys = new Set(options.propKeys);
+  const ibKeys = Object.keys(node.__propData || {});
   for (const it of (options.classList || [])) {
     el.classList.toggle(it);
   }
   for (const [name, value] of Object.entries(options.attrs)) {
     const camelName = name.replace(/-([a-zA-Z])/g, $1 => $1.substring(1).toLocaleUpperCase());
-    if (keys.has(name)) {
+    if (keys.has(name) || ibKeys.indexOf(name) !== -1) {
       data[camelName] = value;
     } else {
       el.setAttribute(name, value === null ? '' : value);
@@ -116,30 +117,30 @@ export default {
   },
   generate(instance: any, ast: TyAstRoot, data: Object, scopedAttr: string, withPath?: boolean, attrsMap?: TyAttrsMap, propsMap?: Record<string, Array<string>>) {
     const create = (ast: TyAst, nodePath: TyAstPath = '', scoped: Record<string, any>) => {
-      if (!ast.tag && (ast.comment || (typeof ast.text === 'string' && !ast.text.trim()))) {
+      if (!ast.tag && ((ast as any).comment || (typeof (ast as any).text === 'string' && !(ast as any).text.trim()))) {
         return undefined;
       }
       if (!ast.tag) {
-        if (!ast.text) {
+        if (!(ast as any).text) {
           return undefined;
         }
-        let textOrg = ast.text;
+        let textOrg = (ast as any).text;
         let isExpression = false;
-        if (Array.isArray(ast.text)) {
-          for (const iterator of ast.text) {
+        if (Array.isArray((ast as any).text)) {
+          for (const iterator of (ast as any).text) {
             if (Object.hasOwnProperty.call(iterator, '$')) {
               isExpression = true;
               break;
             }
           }
-          textOrg = ast.text.join('');
-        } else if (Object.hasOwnProperty.call(ast.text, '$')) {
+          textOrg = (ast as any).text.join('');
+        } else if (Object.hasOwnProperty.call((ast as any).text, '$')) {
           isExpression = true;
         }
-        const text = Wxml.stringifyToExpression(ast.text);
+        const text = Wxml.stringifyToExpression((ast as any).text);
         const value = (isExpression ? this.excute(text, scoped, data) : textOrg);
         if (typeof value === 'undefined' || value === null) {
-          return document.createTextNode(Wxml.stringifyToText(ast.text) || '[文本]');
+          return document.createTextNode(Wxml.stringifyToText((ast as any).text) || '[文本]');
         }
         return document.createTextNode(value);
       }
@@ -154,8 +155,8 @@ export default {
         }
       };
 
-      if (ast.id !== undefined) {
-        n.setAttribute('data-attr-id', ast.id);
+      if ((ast as any).id !== undefined) {
+        n.setAttribute('data-attr-id', (ast as any).id);
       }
       if (withPath && nodePath) {
         n.setAttribute('data-attr-path', nodePath);

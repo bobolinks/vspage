@@ -3,7 +3,7 @@ import path from 'path';
 import md5 from 'md5';
 import mime from 'mime';
 import stream from 'stream';
-import { Express } from 'express';
+import express, { Express } from 'express';
 import env from '../environment';
 import Editor from '../modules/editor';
 import { lookupModule } from './lookup';
@@ -201,6 +201,6 @@ export default {
       readStream.pipe(response);
     });
     // disable service worker
-    // expr.use('/', express.static(env.paths.minisrc));
+    expr.use('/', express.static(env.paths.minisrc));
   },
 };

@@ -11,6 +11,7 @@ export default function (code: string, filePath: string): string {
     <style>
       :root { --devicePixelRatio: 1; }
       html,body {padding: 0; margin: 0;}
+      wx-image div { height: 100%; width: 100%; }
     </style>
     <link id="stylesheet-app" rel="stylesheet" href="/app.wxss?t=0" />
     <link id="stylesheet-page" rel="stylesheet" href="./${name}.wxss?t=0" />

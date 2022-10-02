@@ -13,7 +13,7 @@ module.exports = {
     filename: 'service.js',
     libraryTarget: 'commonjs2',
   },
-  mode: "production", /**development */
+  mode: "production", /** development production */
   externals: {
     typescript: 'commonjs typescript',
     ws: 'commonjs ws',
