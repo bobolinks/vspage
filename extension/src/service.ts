@@ -165,7 +165,7 @@ export class Service implements VsCodeService, vscode.Disposable {
   alert(data: string | MessageData): void {
     const message = typeof data === 'string' ? data : data.message;
     const type = typeof data === 'string' ? 'info' : data.type;
-    let items: Array<string> = typeof message === 'string' ? [`[${type.toUpperCase()}] ${message}]`] : [];
+    let items: Array<string> = typeof message === 'string' ? [`[${type.toUpperCase()}] ${message}`] : [];
     if (typeof message !== 'string') {
       if (Array.isArray(message)) {
         items = (message as any).map((e: any) => `[${type.toUpperCase()}] ${e}`);

@@ -36,6 +36,17 @@
         "-h"
       ],
       "cwd": "${workspaceFolder}/viwx"
-    }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "xs test",
+      "program": "${workspaceFolder}/lab/node_modules/ts-node/dist/bin.js",
+      "args": [
+        "${workspaceFolder}/lab/src/testxs.ts",
+        "-h"
+      ],
+      "cwd": "${workspaceFolder}/lab"
+    },
   ]
 }

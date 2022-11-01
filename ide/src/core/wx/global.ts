@@ -11,7 +11,7 @@ interface WxGlobal {
   Page: WechatMiniprogram.Page.Constructor;
   getCurrentPages: WechatMiniprogram.Page.GetCurrentPages;
   Component: WechatMiniprogram.Component.Constructor;
-  require(module: string): Promise<any>;
+  require(module: string): any;
 }
 
 const wxInstance: WechatMiniprogram.Wx = {} as any;
@@ -71,16 +71,8 @@ export const wxGlobal: WxGlobal = {
     component.bind(options);
     return '';
   },
-  require(file): Promise<any> {
-    try {
-      return Sys.import(file);
-    } catch (e: any) {
-      VsCode.alert({
-        type: 'error',
-        message: e.message || e.toString(),
-      });
-      throw e;
-    }
+  require(file): any {
+    return Sys.require(file);
   }
 };
 

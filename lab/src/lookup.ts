@@ -1,0 +1,1 @@
+../../service/src/rs/lookup.ts

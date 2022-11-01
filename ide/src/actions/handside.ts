@@ -2,6 +2,15 @@ import state from "../store";
 import { isNotContainer } from "./layout";
 
 export const group: TyActionGroup = {
+  reload: {
+    label: 'reload',
+    icon: 'reload',
+    disabled: false,
+    actived: true,
+    excute: () => {
+      location.reload();
+    },
+  },
   flex: {
     label: 'FLEX',
     icon: 'layout',
@@ -13,5 +22,5 @@ export const group: TyActionGroup = {
       return style.display === 'flex';
     },
     excute: () => false,
-  }
+  },
 };

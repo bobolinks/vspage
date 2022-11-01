@@ -39,7 +39,7 @@ export default {
     // mount components
     await loadComponents(store.config.usingComponents || {});
     await wx.navigateTo({
-      url: store.homePage,
+      url: store.currPage,
     });
   }
 };

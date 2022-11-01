@@ -223,3 +223,5 @@ export const Editor = new class implements IEditor {
 };
 
 w.Editor = Editor;
+
+w.wxAlert = VsCode.alert.bind(VsCode);

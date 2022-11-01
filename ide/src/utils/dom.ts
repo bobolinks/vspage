@@ -18,7 +18,7 @@ function createElement(instance: any, tag: string, options: TyCreateOptions) {
   const el = node ? node.$$ : document.createElement(tag);
   const data: Record<string, string | number | boolean> = {};
   const keys = new Set(options.propKeys);
-  const ibKeys = Object.keys(node.__propData || {});
+  const ibKeys = Object.keys(node?.__propData || {});
   for (const it of (options.classList || [])) {
     el.classList.toggle(it);
   }

@@ -105,6 +105,8 @@ async function start() {
       });
     });
 
+    logger.info(`Project minisrc = ${env.paths.minisrc} ${process.argv}`);
+
     logger.info(`VsPage started, listening on : ${interfaces.map((e: { address: any; }) => `http://${e.address}:${port}`).join(', ')}`);
   });
 }

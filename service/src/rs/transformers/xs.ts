@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import path from 'path';
 import ts from 'typescript';
 import { lookupModule } from '../lookup';
 
@@ -13,62 +14,55 @@ function isExportDefault(node: ts.Declaration): boolean {
   return (ts.getCombinedModifierFlags(node) & modifier) === modifier;
 }
 
-function requireToImport(factory: ts.NodeFactory, nodes: any[], expr: ts.CallExpression, impAppend: string, decl?: ts.VariableDeclaration): ts.ImportDeclaration {
-  const { name } = decl || {};
-  const fileName = (expr.arguments[0] as any).text;
-  const spec = factory.createStringLiteral(`${fileName}${impAppend}`);
-  if (name && decl && ts.isObjectBindingPattern(name)) {
-    const nameFmt = name.getText().replace(/[^0-9a-z]/ig, '_');
-    const cause = factory.createImportClause(false, factory.createIdentifier(nameFmt), undefined);
-    const newNode = factory.createImportDeclaration(undefined, undefined, cause, spec);
-    nodes.push(newNode);
-    const newDecl = factory.createVariableDeclaration(decl.name, decl.exclamationToken, undefined, factory.createIdentifier(nameFmt));
-    const newDels = factory.createVariableDeclarationList([newDecl]);
-    const newStmt = factory.createVariableStatement(undefined, newDels);
-    nodes.push(newStmt);
-    return newNode;
-  }
-  const cause = name ? factory.createImportClause(false, factory.createIdentifier(name.getText()), undefined) : undefined;
-  const newNode = factory.createImportDeclaration(undefined, undefined, cause, spec);
-  nodes.push(newNode);
-  return newNode;
-}
-
 export default function (prjPath: string, filePath: string, code: string, importType?: string, prefixCode?: string): string {
   const impAppend = importType === 'module' ? '?import=module' : '';
-  let hasExported = false;
-  let hasDefaultExported = false;
+  let inExportOrImport = false;
 
   const transformer: ts.TransformerFactory<ts.SourceFile> = (context) => {
     const { factory } = context;
-    let level = 0;
     return (sourceFile) => {
-      const nodes: any = [];
       const visitor: ts.Visitor = function (this: any, node: ts.Node): ts.Node {
-        if (ts.isExportAssignment(node)) {
-          hasExported = true;
-          if (isExportDefault(node)) {
-            hasDefaultExported = true;
+        if (inExportOrImport && ts.isStringLiteral(node)) {
+          inExportOrImport = false;
+          const fileName = (node as any).text;
+          if (/^@\//.test(fileName)) {
+            return factory.createStringLiteral(`/${fileName.substring(2)}${impAppend}`);
+          } if (/^[^./]/.test(fileName)) {
+            const newPath = lookupModule(prjPath, fileName);
+            if (newPath && newPath !== fileName) {
+              return factory.createStringLiteral(`${newPath}${impAppend}`);
+            }
+          } if (impAppend) {
+            const np = path.resolve(path.dirname(`/${filePath}`), fileName)
+            return factory.createStringLiteral(`${np}${impAppend}`);
           }
+          return node;
+        }
+        if (ts.isExportAssignment(node)) {
+          inExportOrImport = true;
+          return ts.visitEachChild(node, visitor, context);
         } else if (ts.isFunctionDeclaration(node) && isExportDefault(node)) {
-          hasExported = true;
-          hasDefaultExported = true;
+          inExportOrImport = true;
+          return ts.visitEachChild(node, visitor, context);
         } else if (ts.isClassDeclaration(node) && isExportDefault(node)) {
-          hasExported = true;
-          hasDefaultExported = true;
+          inExportOrImport = true;
+          return ts.visitEachChild(node, visitor, context);
         } else if (ts.isExportDeclaration(node)) {
-          hasExported = true;
+          inExportOrImport = true;
+          return ts.visitEachChild(node, visitor, context);
         }
         if (ts.isCallExpression(node)) {
           if ((node as any).expression.text === 'require') {
-            return requireToImport(factory, nodes, node, impAppend);
+            inExportOrImport = true;
+            return ts.visitEachChild(node, visitor, context);
           }
         } else if (ts.isExpressionStatement(node)) {
           const stmt = node as ts.ExpressionStatement;
           const expr = stmt.expression as ts.CallExpression;
           if (ts.isCallExpression(expr)) {
             if ((expr as any).expression.text === 'require') {
-              return requireToImport(factory, nodes, expr, impAppend);
+              inExportOrImport = true;
+              return ts.visitEachChild(node, visitor, context);
             }
           }
         } else if (ts.isVariableStatement(node)) {
@@ -79,77 +73,22 @@ export default function (prjPath: string, filePath: string, code: string, import
               const decl = decls[0] as ts.VariableDeclaration;
               const expr = decl.initializer as ts.CallExpression;
               if ((expr as any).expression.text === 'require') {
-                return requireToImport(factory, nodes, expr, impAppend, decl);
+                inExportOrImport = true;
+                return ts.visitEachChild(node, visitor, context);
               }
             }
           }
         } else if (ts.isImportDeclaration(node)) {
-          const fileName = (node as any).moduleSpecifier.text;
-          if (/^@\//.test(fileName)) {
-            const spec = factory.createStringLiteral(`/src/${fileName.substring(2)}${impAppend}`);
-            const newNode = factory.createImportDeclaration(node.decorators, node.modifiers, node.importClause, spec);
-            nodes.push(newNode);
-            return newNode;
-          } if (/^[^./]/.test(fileName)) {
-            const newPath = lookupModule(prjPath, fileName);
-            if (newPath === undefined) {
-              if (node.importClause?.name) {
-                // create an variable statement
-                const emptyObject = factory.createObjectLiteralExpression();
-                const newDecl = factory.createVariableDeclaration(node.importClause.name, undefined, undefined, emptyObject);
-                const newDels = factory.createVariableDeclarationList([newDecl]);
-                const newNode = factory.createVariableStatement(undefined, newDels);
-                nodes.push(newNode);
-              }
-            } else if (newPath !== fileName) {
-              const spec = factory.createStringLiteral(`${newPath}${impAppend}`);
-              const newNode = factory.createImportDeclaration(node.decorators, node.modifiers, node.importClause, spec);
-              nodes.push(newNode);
-              return newNode;
-            }
-          } else if (!/\.(css|wxss)$/.test(fileName)) {
-            const spec = factory.createStringLiteral(`${fileName}${impAppend}`);
-            const newNode = factory.createImportDeclaration(node.decorators, node.modifiers, node.importClause, spec);
-            nodes.push(newNode);
-            return newNode;
-          }
+          inExportOrImport = true;
+          return ts.visitEachChild(node, visitor, context);
         } else if (ts.isExportDeclaration(node)) {
-          if (node.moduleSpecifier) {
-            const fileName = (node as any).moduleSpecifier.text;
-            if (/^@\//.test(fileName)) {
-              const spec = factory.createStringLiteral(`/src/${fileName.substring(2)}${impAppend}`);
-              const newNode = factory.createExportDeclaration(node.decorators, node.modifiers, node.isTypeOnly, node.exportClause, spec);
-              nodes.push(newNode);
-              return newNode;
-            } if (/^[^./]/.test(fileName)) {
-              const newPath = lookupModule(prjPath, fileName);
-              if (newPath && newPath !== fileName) {
-                const spec = factory.createStringLiteral(`${newPath}${impAppend}`);
-                const newNode = factory.createExportDeclaration(node.decorators, node.modifiers, node.isTypeOnly, node.exportClause, spec);
-                nodes.push(newNode);
-                return newNode;
-              }
-            } if (impAppend) {
-              const spec = factory.createStringLiteral(`${fileName}${impAppend}`);
-              const newNode = factory.createExportDeclaration(node.decorators, node.modifiers, node.isTypeOnly, node.exportClause, spec);
-              nodes.push(newNode);
-              return newNode;
-            }
-          }
+          inExportOrImport = true;
+          return ts.visitEachChild(node, visitor, context);
         }
-
-        if (level === 1) {
-          nodes.push(node);
-          return node;
-        }
-        level++;
-        const rs = ts.visitEachChild(node, visitor, context);
-        level--;
-        return rs;
+        return ts.visitEachChild(node, visitor, context);
       };
 
-      ts.visitNode(sourceFile, visitor);
-      return factory.updateSourceFile(sourceFile, nodes);
+      return ts.visitNode(sourceFile, visitor);
     };
   };
 
@@ -178,14 +117,6 @@ export default function (prjPath: string, filePath: string, code: string, import
       target: ts.ScriptTarget.ESNext,
     },
   }).outputText;
-
-  if (importType === 'module') {
-    if (!hasExported) {
-      src = `var exports = {};\nvar module = {exports};\n${src}\nexport default exports.default || module.exports;\n`;
-    } else if (!hasDefaultExported) {
-      src = `var exports = {};\nvar module = {exports};\n${src}\nexport default module.exports;\n`;
-    }
-  }
 
   return `${prefixCode || ''}${prefixCode ? ';\n' : ''}${src}`;
 }

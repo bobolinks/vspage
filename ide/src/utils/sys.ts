@@ -1,3 +1,5 @@
+import Net from './net';
+
 type Dependence = {
   type: 'stylesheet' | 'module' | 'source';
   value: string;
@@ -6,6 +8,7 @@ type Dependence = {
 };
 
 export default {
+  modules: {} as Record<string, any>,
   mountLink(id: string, path: string, timestamp: number, attrs?: Record<string, string>, contentDocument?: Document | null): Promise<any> {
     if (/^[^./]/.test(path)) {
       path = `/${path}`;
@@ -96,7 +99,40 @@ export default {
     if (!(window as any).import) {
       (window as any).import = new Function('path', 'return import(path)');
     }
-    return (await (window as any).import(path)).default;
+    try {
+      return (await (window as any).import(path)).default;
+    } catch (e: any) {
+      if ((window as any).wxAlert) {
+        (window as any).wxAlert({
+          type: 'error',
+          message: `[import ${path}]\n${e.message || e.toString()}`,
+        });
+      }
+      throw e;
+    }
+  },
+  require(path: string) {
+    try {
+      let m = this.modules[path];
+      if (m) {
+        return m;
+      }
+      const code = Net.requestSync({
+        url: path,
+        method: 'GET',
+      });
+      m = eval(`(function(){var module = {exports: {}}; var exports = module.exports; ${code}; return exports;})()`);
+      this.modules[path] = m;
+      return m;
+    } catch (e: any) {
+      if ((window as any).wxAlert) {
+        (window as any).wxAlert({
+          type: 'error',
+          message: `[require ${path}]\n${e.message || e.toString()}`,
+        });
+      }
+      throw e;
+    }
   },
   randomString(length: number) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-';
