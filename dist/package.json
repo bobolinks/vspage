@@ -29,7 +29,6 @@
     ]
   },
   "dependencies": {
-    "fsevents": "^2.3.2",
     "shelljs": "^0.8.5",
     "typescript": "^4.7.3",
     "ws": "^8.8.0"

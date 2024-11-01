@@ -13,11 +13,10 @@ module.exports = {
     filename: 'viwx.js',
     libraryTarget: 'commonjs2',
   },
-  mode: "production", /**development */
+  mode: 'production' /**development */,
   externals: {
     typescript: 'commonjs typescript',
     ws: 'commonjs ws',
-    fsevents: 'commonjs fsevents'
   },
   plugins: [
     new webpack.ProgressPlugin({
@@ -29,18 +28,18 @@ module.exports = {
         output(`${Math.ceil(percentage * 100)}% ${message}`);
       },
     }),
-    new webpack.BannerPlugin({ banner: "#!/usr/bin/env node", raw: true }),
+    new webpack.BannerPlugin({ banner: '#!/usr/bin/env node', raw: true }),
   ],
   module: {
     rules: [
       {
         test: /\.ts[x]?$/,
-        loader: "ts-loader"
+        loader: 'ts-loader',
       },
       {
-        enforce: "pre",
+        enforce: 'pre',
         test: /\.ts[x]$/,
-        loader: "source-map-loader"
+        loader: 'source-map-loader',
       },
       {
         test: /\.(js|jsx)$/,
@@ -48,13 +47,13 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env']
-          }
-        }
+            presets: ['@babel/preset-env'],
+          },
+        },
       },
-    ]
+    ],
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".json"],
+    extensions: ['.ts', '.tsx', '.js', '.json'],
   },
-}
+};
