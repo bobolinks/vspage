@@ -12,6 +12,10 @@ export const module = {
       throw 'invald url';
     }
     headers.host = (new Url.URL(options.url)).host;
+    const method = options.method;
+    if (method && !['post', 'get'].includes(method)) {
+      options.method = 'POST';
+    }
     const rs = await net.request(options);
     return rspRaw ? {
       data: rs.data,

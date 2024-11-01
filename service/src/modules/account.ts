@@ -35,7 +35,7 @@ export default {
   name: 'account',
   module(rpc: any) {
     if (fs.existsSync(accFile)) {
-      Object.assign(wxContext, JSON.parse(fs.readFileSync(accFile, 'utf-8')));
+      wxContext.userInfo = JSON.parse(fs.readFileSync(accFile, 'utf-8'));
     }
     return module;
   },

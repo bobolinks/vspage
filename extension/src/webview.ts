@@ -62,6 +62,7 @@ export class WebView {
   private vspage: VsPage;
   private service: Service;
   private exclude: Array<string>;
+  private modulesMap: Record<string, string> = {};
   private compilerOptions: ts.CompilerOptions;
   private workspacePath: string;
   private projectPath: string;
@@ -88,6 +89,9 @@ export class WebView {
       }
       if (config.exclude) {
         this.exclude = config.exclude as any;
+      }
+      if (config.modules) {
+        this.modulesMap = config.modules;
       }
     }
 
@@ -243,13 +247,51 @@ export class WebView {
       this.reloadVsPageConfig();
     } else if (/(?<!\.d)\.ts/i.test(relPath) && !utils.isMatchedVx(relPath, this.exclude)) {
       const jsFile = curPath.replace(/\.ts$/, '.js');
-      const rs = ts.transpileModule(e.getText(), {
+      const opts: ts.TranspileOptions = {
         compilerOptions: {
           alwaysStrict: true,
           inlineSourceMap: false,
           target: this.compilerOptions.target || ts.ScriptTarget.ESNext,
         },
-      });
+      };
+      const curDir = path.dirname(curPath);
+      const modulesMap = this.modulesMap
+      const workspacePath = this.workspacePath;
+      if (Object.keys(this.modulesMap).length) {
+        const moduleMapping = (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
+          return (sourceFile: ts.SourceFile) => {
+            function visitNode(node: ts.Node): ts.Node {
+              if (ts.isImportDeclaration(node)) {
+                const moduleSpecifier = node.moduleSpecifier as ts.StringLiteral;
+                const mapping = modulesMap[moduleSpecifier.text];
+                if (mapping) {
+                  const mp = path.resolve(workspacePath, mapping);
+                  let rmp = utils.path.relative(curDir, mp);
+                  if (!rmp.startsWith('.')) {
+                    rmp = `./${rmp}`;
+                  }
+                  // 创建新的 import 声明
+                  const newModuleSpecifier = ts.factory.createStringLiteral(rmp);
+                  return ts.factory.createImportDeclaration(
+                    node.decorators,
+                    node.modifiers,
+                    node.importClause,
+                    newModuleSpecifier,
+                    node.assertClause
+                  );
+                }
+              }
+              return ts.visitEachChild(node, visitNode, context);
+            }
+
+            return ts.visitNode(sourceFile, visitNode);
+          };
+        }
+        opts.transformers = {
+          before: [moduleMapping],
+        };
+      }
+      const rs = ts.transpileModule(e.getText(), opts);
       if (rs) {
         fs.writeFileSync(jsFile, `/* eslint-disable */\n${rs.outputText}`, 'utf-8');
       }
@@ -384,6 +426,11 @@ export class WebView {
       }
       if (config.exclude) {
         this.exclude = config.exclude as any;
+      }
+      if (config.modules) {
+        this.modulesMap = config.modules;
+      } else {
+        this.modulesMap = {};
       }
     }
   }

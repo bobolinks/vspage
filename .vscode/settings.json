@@ -2,25 +2,23 @@
   "editor.insertSpaces": true,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.tslint": true,
-    "source.fixAll.eslint": true
+    "source.fixAll.tslint": "explicit",
+    "source.fixAll.eslint": "explicit"
   },
   "[javascript]": {
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": true
   },
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
   },
-  "minapp-vscode.reserveTags": [
-    "text"
-  ],
+  "minapp-vscode.reserveTags": ["text"],
   "files.associations": {
     "*.wxss": "css",
     "*.wxs": "javascript",
-    "*.wts": "typescript",
+    "*.wts": "typescript"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features"
-  },
+  }
 }
